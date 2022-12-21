@@ -1,2 +1,2 @@
 # Squadmaker
-Mobile roster planner for intramural sports leagues that ensures all players on a team get a fair turn to play.
+Helps team captains build and organize their squad roster on a mobile device for common intramural sports.
