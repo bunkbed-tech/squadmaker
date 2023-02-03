@@ -1,0 +1,111 @@
+table player {
+  id serial
+  name varchar(100)
+  gender gender
+  pronouns varchar(25)
+  birthday date
+  phone varchar(15)
+  email varchar(100)
+  place_from varchar(100)
+  photo varchar(255)
+
+  score_all_time int
+  score_avg_per_game numeric
+  games_attended int
+}
+
+table user {
+  id serial
+  name varchar(100)
+  email varchar(100)
+  username varchar(25)
+  password_hash text
+  export_dir varchar(255)
+  theme app_theme
+  avatar varchar(255)
+  datetime_created datetime
+}
+
+table game {
+  id serial
+  opponent_name varchar(25)
+  location varchar(255)
+  start_datetime datetime
+  your_score int
+  opponent_score int
+  group_photo varchar(255)
+  
+  league_id int [ref: > league.id]
+}
+
+table attendance {
+  id serial
+  player_id int [ref: > player.id]
+  game_id int [ref: > game.id]
+  attended boolean
+}
+
+table league {
+  id serial
+  name varchar(100)
+  team_name varchar(25)
+  sport sport
+  
+  captain int [ref: > user.id]
+  
+  games_won int
+  games_lost int
+  games_played int
+}
+
+table payment {
+  id serial
+  player_id int [ref: > player.id]
+  league_id int [ref: > league.id]
+}
+
+table score {
+  id serial
+  player_id int
+  game_id int
+  time timestamp
+  type int [ref: > score_type.id]
+}
+
+table score_type {
+  id serial
+  value int
+  sport sport
+  type varchar(10)
+}
+
+table trophy {
+  id serial
+  player_id int [ref: > player.id]
+  type trophy_type
+  date_awarded date
+}
+
+enum trophy_type {
+  perfect_attendance
+  high_score_game
+  high_score_league
+  hat_trick
+}
+
+enum gender {
+  man
+  woman
+  other
+}
+
+enum sport {
+  kickball
+  baseball
+  softball
+}
+
+enum app_theme {
+  light
+  dark
+}
