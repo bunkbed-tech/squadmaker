@@ -9,45 +9,46 @@ import 'models/enums.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print(await getDatabasesPath());
-  final database = openDatabase(
+  final database = await openDatabase(
     join(await getDatabasesPath(), "squadmaker.db"),
-    onCreate: (db, version) {
-      return db.execute("""
+    onCreate: (db, version) async {
+      await db.execute("""
         ${Gender.createSQLTable()}
-        ${Player.createSQLTable()}
       """);
     },
     version: 1,
   );
-  final db = await database;
+  print(database.path);
+  print(database.isOpen);
+  // final db = await database;
 
-  // TEST create
-  var player1 = Player(
-    id: 0,
-    name: "Player1",
-    gender: Gender.man,
-    pronouns: "He/Him",
-    birthday: DateTime.utc(1995, 11, 27),
-    phone: "+11234567890",
-    email: "me@mail.com",
-    placeFrom: "Tucson, AZ",
-    photo: "/path/to/my/photo",
-    scoreAllTime: 0,
-    scoreAvgPerGame: 0.0,
-    gamesAttended: 0,
-  );
-  await player1.insert(db);
+//   // TEST create
+//   var player1 = Player(
+//     id: 0,
+//     name: "Player1",
+//     gender: Gender.man.toString(),
+//     pronouns: "He/Him",
+//     birthday: DateTime.utc(1995, 11, 27).toString(),
+//     phone: "+11234567890",
+//     email: "me@mail.com",
+//     placeFrom: "Tucson, AZ",
+//     photo: "/path/to/my/photo",
+//     scoreAllTime: 0,
+//     scoreAvgPerGame: 0.0,
+//     gamesAttended: 0,
+//   );
+//   await player1.insert(db);
 
-  // TEST list
-  print(await Player.players(db));
+//   // TEST list
+//   print(await Player.players(db));
 
-  // TEST update
-  player1.gender = Gender.woman; 
-  await player1.update(db);
+//   // TEST update
+//   player1.gender = Gender.woman.toString();
+//   await player1.update(db);
 
-  // TEST delete
-  await player1.delete(db);
-//  runApp(const MyApp());
+//   // TEST delete
+//   await player1.delete(db);
+// //  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

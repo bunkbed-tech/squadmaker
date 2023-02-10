@@ -2,22 +2,22 @@ import 'enums.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm;
 
 class Player {
-  static final String tableName = "player";
+  static const String tableName = "player";
 
   final int id;
   final String name;
-  final Gender gender;
+  String gender;
   final String phone;
   final String email;
   final String pronouns;
-  final DateTime birthday;
+  final String birthday;
   final String placeFrom;
   final String photo;
   final int scoreAllTime;
   final double scoreAvgPerGame;
   final int gamesAttended;
 
-  const Player({
+  Player({
     required this.id,
     required this.name,
     required this.gender,
@@ -32,8 +32,8 @@ class Player {
     required this.gamesAttended,
   });
 
-  set gender(Gender g) {
-    gender = g;
+  set setGender(Gender g) {
+    gender = g.toString();
   }
 
   Map<String, dynamic> toMap() {
@@ -49,13 +49,13 @@ class Player {
       "photo": photo,
       "scoreAllTime": scoreAllTime,
       "scoreAvgPerGame": scoreAvgPerGame,
-      "gamesAttended": gamesAttended,     
+      "gamesAttended": gamesAttended,
     };
   }
 
   static String createSQLTable() {
     return """
-      CREATE TABLE ${tableName} (
+      CREATE TABLE $tableName (
         id SERIAL,
         name TEXT NOT NULL,
         gender INTEGER NOT NULL REFERENCES gender (id),
@@ -69,7 +69,7 @@ class Player {
         score_avg_per_game REAL,
         games_attended INTEGER NOT NULL DEFAULT (0)
       );
-    """;    
+    """;
   }
 
   @override
@@ -78,7 +78,8 @@ class Player {
   }
 
   Future<void> insert(Database db) async {
-    await db.insert(tableName, toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(tableName, toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<List<Player>> players(Database db) async {
