@@ -1,4 +1,4 @@
-import 'enums.dart' show Gender;
+import 'gender.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm;
 
 class Player {

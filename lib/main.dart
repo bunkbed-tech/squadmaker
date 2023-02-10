@@ -4,29 +4,29 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart' show getDatabasesPath, openDatabase;
 import 'models/player.dart';
+import 'models/gender.dart' show Gender;
 import 'models/enums.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  print(await getDatabasesPath());
   final database = await openDatabase(
     join(await getDatabasesPath(), "squadmaker.db"),
     onCreate: (db, version) async {
       await db.execute("""
         ${Gender.createSQLTable()}
       """);
+      await Gender.initialize(db);
     },
     version: 1,
   );
-  print(database.path);
-  print(database.isOpen);
-  // final db = await database;
 
+  // Test create genders
+  print(await Gender.genders(database));
 //   // TEST create
 //   var player1 = Player(
 //     id: 0,
 //     name: "Player1",
-//     gender: Gender.man.toString(),
+//     gender: 1,
 //     pronouns: "He/Him",
 //     birthday: DateTime.utc(1995, 11, 27).toString(),
 //     phone: "+11234567890",
