@@ -2,15 +2,34 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart' show getDatabasesPath, openDatabase;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';// show getDatabasesPath, openDatabase;
+import 'dart:io';// show Platform, Directory;
+import 'package:path_provider/path_provider.dart';
 import 'models/player.dart';
 import 'models/gender.dart' show Gender;
 import 'models/enums.dart';
 
 void main() async {
+  String appDocPath = "";
+
+  // Must use FFI package for SQFlite_3 for Windows Platforms
+  if (Platform.isWindows || Platform.isLinux) {
+    Directory appDocDir = await getApplicationSupportDirectory();
+    appDocPath = appDocDir.path;
+    sqfliteFfiInit();
+  }
+  else{
+    appDocPath = await getDatabasesPath();
+  }
+  // Change the default factory. On iOS/Android, if not using sqlite_flutter_lib you can forget
+  // this step, it will use the sqlite version available on the system.
+  databaseFactory = databaseFactoryFfi;
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Start building database
   final database = await openDatabase(
-    join(await getDatabasesPath(), "squadmaker.db"),
+    join(appDocPath, "squadmaker.db"),
     onCreate: (db, version) async {
       await db.execute("""
         ${Gender.createSQLTable()}
