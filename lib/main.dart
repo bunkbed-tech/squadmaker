@@ -1,7 +1,53 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart' show getDatabasesPath, openDatabase;
+import 'models/player.dart';
+import 'models/enums.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  print(await getDatabasesPath());
+  final database = openDatabase(
+    join(await getDatabasesPath(), "squadmaker.db"),
+    onCreate: (db, version) {
+      return db.execute("""
+        ${Gender.createSQLTable()}
+        ${Player.createSQLTable()}
+      """);
+    },
+    version: 1,
+  );
+  final db = await database;
+
+  // TEST create
+  var player1 = Player(
+    id: 0,
+    name: "Player1",
+    gender: Gender.man,
+    pronouns: "He/Him",
+    birthday: DateTime.utc(1995, 11, 27),
+    phone: "+11234567890",
+    email: "me@mail.com",
+    placeFrom: "Tucson, AZ",
+    photo: "/path/to/my/photo",
+    scoreAllTime: 0,
+    scoreAvgPerGame: 0.0,
+    gamesAttended: 0,
+  );
+  await player1.insert(db);
+
+  // TEST list
+  print(await Player.players(db));
+
+  // TEST update
+  player1.gender = Gender.woman; 
+  await player1.update(db);
+
+  // TEST delete
+  await player1.delete(db);
+//  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
