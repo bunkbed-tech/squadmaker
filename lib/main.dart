@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'models/player.dart';
 import 'models/gender.dart';
 import 'models/league.dart';
+import 'models/user.dart';
 
 void main() async {
   String appDocPath = "";
@@ -34,6 +35,7 @@ void main() async {
       await db.execute(Gender.createSQLTable());
       await db.execute(Player.createSQLTable());
       await db.execute(League.createSQLTable());
+      await db.execute(User.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -63,6 +65,14 @@ void main() async {
   );
   await league1.insert(database);
   print(await League.leagues(database));
+
+  // Test create a user
+  var user1 = User(
+    name: "Tahostan Schrader",
+    email: "tahostan@groton.com",
+  );
+  await user1.insert(database);
+  print(await User.users(database));
 
 //   // TEST list
 //   print(await Player.players(db));
