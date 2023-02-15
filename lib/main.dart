@@ -44,7 +44,7 @@ void main() async {
   // TEST create a player
   var player1 = Player(
     name: "Player1",
-    gender: "man",
+    gender: Gender(id: 1, name: "man"),
     //pronouns: "He/Him",
     //birthday: DateTime.utc(1995, 11, 27).toString(),
     phone: "+11234567890",

@@ -7,7 +7,7 @@ class Player {
   int? id;
   String name;
   String email;
-  String gender;
+  Gender gender;
   String phone;
   String? birthday;
   String? pronouns;
@@ -39,7 +39,7 @@ class Player {
   Map<String, dynamic> toMap() {
     return {
       "name": name,
-      "gender": gender,
+      "gender": gender.id,
       "pronouns": pronouns,
       "phone": phone,
       "email": email,
@@ -52,13 +52,12 @@ class Player {
     };
   }
 
-  // gender INTEGER NOT NULL REFERENCES gender (id),
   static String createSQLTable() {
     return """
       CREATE TABLE $tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         name TEXT NOT NULL,
-        gender TEXT,
+        gender INTEGER NOT NULL REFERENCES gender (id),
         pronouns TEXT,
         birthday TEXT,
         phone TEXT NOT NULL,
@@ -74,7 +73,7 @@ class Player {
 
   @override
   String toString() {
-    return "Player{id: $id, name: $name, email: $email}";
+    return "Player{id: $id, name: $name, email: $email, gender: ${gender.name}}";
   }
 
   Future<void> insert(Database db) async {
@@ -83,12 +82,20 @@ class Player {
   }
 
   static Future<List<Player>> players(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query(tableName);
+    // final List<Map<String, dynamic>> maps = await db.query(tableName);
+    final List<Map<String, dynamic>> maps = await db.rawQuery("""
+      SELECT
+        player.*,
+        gender.name AS gender_name
+      FROM player
+      INNER JOIN gender ON player.gender = gender.id
+      """);
+
     return List.generate(maps.length, (i) {
       return Player(
         id: maps[i]["id"],
         name: maps[i]["name"],
-        gender: maps[i]["gender"],
+        gender: Gender(id: maps[i]["gender"], name: maps[i]["gender_name"]),
         pronouns: maps[i]["pronouns"],
         birthday: maps[i]["birthday"],
         phone: maps[i]["phone"],

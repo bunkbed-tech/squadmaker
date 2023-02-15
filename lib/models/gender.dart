@@ -3,11 +3,11 @@ import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm, Batch;
 class Gender {
   static const String tableName = "gender";
 
-  final int id;
-  final String name;
+  int? id;
+  String name;
 
   Gender({
-    required this.id,
+    this.id,
     required this.name,
   });
 
