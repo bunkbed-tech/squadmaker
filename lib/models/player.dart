@@ -32,10 +32,6 @@ class Player {
     this.gamesAttended,
   });
 
-  // set setGender(Gender g) {
-  //   gender = g.toString();
-  // }
-
   Map<String, dynamic> toMap() {
     return {
       "name": name,

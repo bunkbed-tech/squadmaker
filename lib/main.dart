@@ -7,8 +7,8 @@ import 'package:sqflite/sqflite.dart'; // show getDatabasesPath, openDatabase;
 import 'dart:io'; // show Platform, Directory;
 import 'package:path_provider/path_provider.dart';
 import 'models/player.dart';
-import 'models/gender.dart' show Gender;
-import 'models/enums.dart';
+import 'models/gender.dart';
+import 'models/league.dart';
 
 void main() async {
   String appDocPath = "";
@@ -27,18 +27,17 @@ void main() async {
     appDocPath = await getDatabasesPath();
   }
 
-  // Start building database
+  // Start building database and initialize tables that need it
   var database = await openDatabase(
     join(appDocPath, "squadmaker.db"),
     onCreate: (db, version) async {
       await db.execute(Gender.createSQLTable());
       await db.execute(Player.createSQLTable());
+      await db.execute(League.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
   );
-
-  // Test create genders
   print(await Gender.genders(database));
 
   // TEST create a player
@@ -53,8 +52,17 @@ void main() async {
     //photo: "/path/to/my/photo",
   );
   await player1.insert(database);
-
   print(await Player.players(database));
+
+  // Test create a league
+  var league1 = League(
+    name: "Cool Guys League",
+    teamName: "The Cool Guys",
+    sport: "Kickball",
+    captain: "Joe Schmo",
+  );
+  await league1.insert(database);
+  print(await League.leagues(database));
 
 //   // TEST list
 //   print(await Player.players(db));
