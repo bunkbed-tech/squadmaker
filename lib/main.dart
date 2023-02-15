@@ -28,12 +28,11 @@ void main() async {
   }
 
   // Start building database
-  final database = await openDatabase(
+  var database = await openDatabase(
     join(appDocPath, "squadmaker.db"),
     onCreate: (db, version) async {
-      await db.execute("""
-        ${Gender.createSQLTable()}
-      """);
+      await db.execute(Gender.createSQLTable());
+      await db.execute(Player.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -41,22 +40,21 @@ void main() async {
 
   // Test create genders
   print(await Gender.genders(database));
-//   // TEST create
-//   var player1 = Player(
-//     id: 0,
-//     name: "Player1",
-//     gender: 1,
-//     pronouns: "He/Him",
-//     birthday: DateTime.utc(1995, 11, 27).toString(),
-//     phone: "+11234567890",
-//     email: "me@mail.com",
-//     placeFrom: "Tucson, AZ",
-//     photo: "/path/to/my/photo",
-//     scoreAllTime: 0,
-//     scoreAvgPerGame: 0.0,
-//     gamesAttended: 0,
-//   );
-//   await player1.insert(db);
+
+  // TEST create a player
+  var player1 = Player(
+    name: "Player1",
+    gender: "man",
+    //pronouns: "He/Him",
+    //birthday: DateTime.utc(1995, 11, 27).toString(),
+    phone: "+11234567890",
+    email: "me@mail.com",
+    //placeFrom: "Tucson, AZ",
+    //photo: "/path/to/my/photo",
+  );
+  await player1.insert(database);
+
+  print(await Player.players(database));
 
 //   // TEST list
 //   print(await Player.players(db));

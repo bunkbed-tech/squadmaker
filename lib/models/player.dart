@@ -4,61 +4,61 @@ import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm;
 class Player {
   static const String tableName = "player";
 
-  final int id;
-  final String name;
+  int? id;
+  String name;
+  String email;
   String gender;
-  final String phone;
-  final String email;
-  final String pronouns;
-  final String birthday;
-  final String placeFrom;
-  final String photo;
-  final int scoreAllTime;
-  final double scoreAvgPerGame;
-  final int gamesAttended;
+  String phone;
+  String? birthday;
+  String? pronouns;
+  String? placeFrom;
+  String? photo;
+  int? scoreAllTime;
+  double? scoreAvgPerGame;
+  int? gamesAttended;
 
   Player({
-    required this.id,
+    this.id,
     required this.name,
+    required this.email,
     required this.gender,
     required this.phone,
-    required this.email,
-    required this.birthday,
-    required this.pronouns,
-    required this.placeFrom,
-    required this.photo,
-    required this.scoreAllTime,
-    required this.scoreAvgPerGame,
-    required this.gamesAttended,
+    this.birthday,
+    this.pronouns,
+    this.placeFrom,
+    this.photo,
+    this.scoreAllTime,
+    this.scoreAvgPerGame,
+    this.gamesAttended,
   });
 
-  set setGender(Gender g) {
-    gender = g.toString();
-  }
+  // set setGender(Gender g) {
+  //   gender = g.toString();
+  // }
 
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
       "name": name,
       "gender": gender,
       "pronouns": pronouns,
       "phone": phone,
       "email": email,
       "birthday": birthday,
-      "placeFrom": placeFrom,
+      "place_from": placeFrom,
       "photo": photo,
-      "scoreAllTime": scoreAllTime,
-      "scoreAvgPerGame": scoreAvgPerGame,
-      "gamesAttended": gamesAttended,
+      "score_all_time": scoreAllTime,
+      "score_avg_per_game": scoreAvgPerGame,
+      "games_attended": gamesAttended,
     };
   }
 
+  // gender INTEGER NOT NULL REFERENCES gender (id),
   static String createSQLTable() {
     return """
       CREATE TABLE $tableName (
-        id SERIAL,
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         name TEXT NOT NULL,
-        gender INTEGER NOT NULL REFERENCES gender (id),
+        gender TEXT,
         pronouns TEXT,
         birthday TEXT,
         phone TEXT NOT NULL,
@@ -93,11 +93,11 @@ class Player {
         birthday: maps[i]["birthday"],
         phone: maps[i]["phone"],
         email: maps[i]["email"],
-        placeFrom: maps[i]["placeFrom"],
+        placeFrom: maps[i]["place_from"],
         photo: maps[i]["photo"],
-        scoreAllTime: maps[i]["scoreAllTime"],
-        scoreAvgPerGame: maps[i]["scoreAvgPerGame"],
-        gamesAttended: maps[i]["gamesAttended"],
+        scoreAllTime: maps[i]["score_all_time"],
+        scoreAvgPerGame: maps[i]["score_avg_per_game"],
+        gamesAttended: maps[i]["games_attended"],
       );
     });
   }
