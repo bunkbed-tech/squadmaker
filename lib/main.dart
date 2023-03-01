@@ -6,10 +6,12 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart'; // show getDatabasesPath, openDatabase;
 import 'dart:io'; // show Platform, Directory;
 import 'package:path_provider/path_provider.dart';
+import 'package:squadmaker/models/attendance.dart';
 import 'models/player.dart';
 import 'models/gender.dart';
 import 'models/league.dart';
 import 'models/user.dart';
+import 'models/attendance.dart';
 
 void main() async {
   String appDocPath = "";
@@ -36,11 +38,12 @@ void main() async {
       await db.execute(Player.createSQLTable());
       await db.execute(League.createSQLTable());
       await db.execute(User.createSQLTable());
+      await db.execute(Attendance.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
   );
-  print(await Gender.genders(database));
+  print(await Gender.list(database));
 
   // TEST create a player
   var player1 = Player(
@@ -54,7 +57,7 @@ void main() async {
     //photo: "/path/to/my/photo",
   );
   await player1.insert(database);
-  print(await Player.players(database));
+  print(await Player.list(database));
 
   // Test create a league
   var league1 = League(
@@ -64,7 +67,7 @@ void main() async {
     captain: "Joe Schmo",
   );
   await league1.insert(database);
-  print(await League.leagues(database));
+  print(await League.list(database));
 
   // Test create a user
   var user1 = User(
@@ -72,8 +75,13 @@ void main() async {
     email: "tahostan@groton.com",
   );
   await user1.insert(database);
-  print(await User.users(database));
+  print(await User.list(database));
 
+  // Test create an attendance
+  var attendance1 =
+      Attendance(player: player1, game: "Game #1", attended: true);
+  await attendance1.insert(database);
+  print(await Attendance.list(database));
 //   // TEST list
 //   print(await Player.players(db));
 
