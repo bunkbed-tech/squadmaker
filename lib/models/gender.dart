@@ -1,16 +1,19 @@
-import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm, Batch;
+import 'base.dart' show Base;
+import 'package:sqflite/sqflite.dart' show Database, Batch;
 
-class Gender {
-  static const String tableName = "gender";
+class Gender extends Base {
+  static const String _tableName = "gender";
+  @override
+  String get tableName => _tableName;
 
-  int? id;
   String name;
 
   Gender({
-    this.id,
+    int? id,
     required this.name,
-  });
+  }) : super(id);
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       "name": name,
@@ -19,7 +22,7 @@ class Gender {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $tableName (
+      CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         name TEXT UNIQUE
       );
@@ -31,13 +34,8 @@ class Gender {
     return "Gender{id: $id, name: $name}";
   }
 
-  Future<void> insert(Database db) async {
-    await db.insert(tableName, toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
-  static Future<List<Gender>> genders(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query(tableName);
+  static Future<List<Gender>> list(Database db) async {
+    final List<Map<String, dynamic>> maps = await db.query(_tableName);
     return List.generate(maps.length, (i) {
       return Gender(
         id: maps[i]["id"],
@@ -48,17 +46,9 @@ class Gender {
 
   static Future<void> initialize(Database db) async {
     Batch batch = db.batch();
-    batch.insert(tableName, {'name': 'man'});
-    batch.insert(tableName, {'name': 'woman'});
-    batch.insert(tableName, {'name': 'other'});
+    batch.insert(_tableName, {'name': 'man'});
+    batch.insert(_tableName, {'name': 'woman'});
+    batch.insert(_tableName, {'name': 'other'});
     await batch.commit();
-  }
-
-  Future<void> update(Database db) async {
-    await db.update(tableName, toMap(), where: "id = ?", whereArgs: [id]);
-  }
-
-  Future<void> delete(Database db) async {
-    await db.delete(tableName, where: "id = ?", whereArgs: [id]);
   }
 }
