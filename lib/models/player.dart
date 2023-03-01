@@ -1,10 +1,12 @@
+import 'base.dart' show Base;
 import 'gender.dart' show Gender;
-import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm;
+import 'package:sqflite/sqflite.dart' show Database;
 
-class Player {
-  static const String tableName = "player";
+class Player extends Base {
+  static const String _tableName = "player";
+  @override
+  String get tableName => _tableName;
 
-  int? id;
   String name;
   String email;
   Gender gender;
@@ -18,7 +20,7 @@ class Player {
   int? gamesAttended;
 
   Player({
-    this.id,
+    int? id,
     required this.name,
     required this.email,
     required this.gender,
@@ -30,12 +32,13 @@ class Player {
     this.scoreAllTime,
     this.scoreAvgPerGame,
     this.gamesAttended,
-  });
+  }) : super(id);
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       "name": name,
-      "gender": gender.id,
+      "gender_id": gender.id,
       "pronouns": pronouns,
       "phone": phone,
       "email": email,
@@ -50,10 +53,10 @@ class Player {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $tableName (
+      CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         name TEXT NOT NULL,
-        gender INTEGER NOT NULL REFERENCES gender (id),
+        gender_id INTEGER NOT NULL REFERENCES gender (id),
         pronouns TEXT,
         birthday TEXT,
         phone TEXT NOT NULL,
@@ -69,29 +72,23 @@ class Player {
 
   @override
   String toString() {
-    return "Player{id: $id, name: $name, email: $email, gender: ${gender.name}}";
+    return "Player{id: $id, name: $name, email: $email, gender_name: ${gender.name}}";
   }
 
-  Future<void> insert(Database db) async {
-    await db.insert(tableName, toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
-  static Future<List<Player>> players(Database db) async {
-    // final List<Map<String, dynamic>> maps = await db.query(tableName);
+  static Future<List<Player>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         player.*,
-        gender.name AS gender_name
+        gender.name AS gender__name
       FROM player
-      INNER JOIN gender ON player.gender = gender.id
+      INNER JOIN gender ON player.gender_id = gender.id
       """);
 
     return List.generate(maps.length, (i) {
       return Player(
         id: maps[i]["id"],
         name: maps[i]["name"],
-        gender: Gender(id: maps[i]["gender"], name: maps[i]["gender_name"]),
+        gender: Gender(id: maps[i]["gender_id"], name: maps[i]["gender__name"]),
         pronouns: maps[i]["pronouns"],
         birthday: maps[i]["birthday"],
         phone: maps[i]["phone"],
@@ -103,13 +100,5 @@ class Player {
         gamesAttended: maps[i]["games_attended"],
       );
     });
-  }
-
-  Future<void> update(Database db) async {
-    await db.update(tableName, toMap(), where: "id = ?", whereArgs: [id]);
-  }
-
-  Future<void> delete(Database db) async {
-    await db.delete(tableName, where: "id = ?", whereArgs: [id]);
   }
 }
