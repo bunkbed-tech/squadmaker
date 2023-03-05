@@ -13,6 +13,8 @@ import 'models/user.dart';
 import 'models/attendance.dart';
 import 'models/game.dart';
 import 'models/payment.dart';
+import 'models/score_type.dart';
+import 'models/enums.dart' show Sport, ScoreNames;
 
 void main() async {
   String appDocPath = "";
@@ -42,6 +44,7 @@ void main() async {
       await db.execute(Attendance.createSQLTable());
       await db.execute(Game.createSQLTable());
       await db.execute(Payment.createSQLTable());
+      await db.execute(ScoreType.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -95,10 +98,16 @@ void main() async {
   await game1.insert(database);
   print(await Game.list(database));
 
-// Test add a payment
+  // Test add a payment
   var payment1 = Payment(player: player1, league: league1, paid: true);
   await payment1.insert(database);
   print(await Payment.list(database));
+
+  // Test add a score type
+  var scoretype1 =
+      ScoreType(value: 1, sport: Sport.kickball, name: ScoreNames.run);
+  await scoretype1.insert(database);
+  print(await ScoreType.list(database));
 
 //   // TEST list
 //   print(await Player.players(db));

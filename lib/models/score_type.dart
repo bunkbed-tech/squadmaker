@@ -1,14 +1,60 @@
 import 'base.dart' show Base;
+import 'package:sqflite/sqflite.dart' show Database;
+import 'enums.dart' show Sport, ScoreNames;
 
 class ScoreType extends Base {
   static const String _tableName = "score_type";
   @override
   String get tableName => _tableName;
-  ScoreType(int? id) : super(id);
+
+  int value;
+  Sport sport; // currently using an enum
+  ScoreNames name; // currently using enum
+
+  ScoreType(
+      {int? id, required this.value, required this.sport, required this.name})
+      : super(id);
+
+  static String createSQLTable() {
+    return """
+      CREATE TABLE $_tableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        value INTEGER,
+        sport TEXT NOT NULL,
+        name TEXT NOT NULL
+      );
+    """;
+  }
 
   @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
-    throw UnimplementedError();
+    return {
+      "value": value,
+      "sport": sport.name,
+      "name": name.name,
+    };
+  }
+
+  @override
+  String toString() {
+    return "ScoreType{id: $id, value: $value, sport: ${sport.name}, name: ${name.name}}";
+  }
+
+  static Future<List<ScoreType>> list(Database db) async {
+    final List<Map<String, dynamic>> maps = await db.rawQuery("""
+      SELECT
+        score_type.*
+      FROM score_type
+      """);
+    return List.generate(maps.length, (i) {
+      return ScoreType(
+        id: maps[i]["id"],
+        value: maps[i]["value"],
+        sport: Sport.values.firstWhere(
+            (e) => e.toString().split(".").last == maps[i]["sport"]),
+        name: ScoreNames.values
+            .firstWhere((e) => e.toString().split(".").last == maps[i]["name"]),
+      );
+    });
   }
 }

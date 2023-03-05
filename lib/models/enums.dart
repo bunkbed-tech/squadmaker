@@ -8,3 +8,7 @@ enum AppTheme {
   light,
   dark
 }
+
+enum ScoreNames {
+  run
+}
