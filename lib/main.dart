@@ -12,6 +12,7 @@ import 'models/league.dart';
 import 'models/user.dart';
 import 'models/attendance.dart';
 import 'models/game.dart';
+import 'models/payment.dart';
 
 void main() async {
   String appDocPath = "";
@@ -40,6 +41,7 @@ void main() async {
       await db.execute(User.createSQLTable());
       await db.execute(Attendance.createSQLTable());
       await db.execute(Game.createSQLTable());
+      await db.execute(Payment.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -92,6 +94,11 @@ void main() async {
       league: league1);
   await game1.insert(database);
   print(await Game.list(database));
+
+// Test add a payment
+  var payment1 = Payment(player: player1, league: league1, paid: true);
+  await payment1.insert(database);
+  print(await Payment.list(database));
 
 //   // TEST list
 //   print(await Player.players(db));

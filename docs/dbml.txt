@@ -62,6 +62,7 @@ table payment {
   id serial
   player_id int [ref: > player.id]
   league_id int [ref: > league.id]
+  paid boolean
 }
 
 table score {
