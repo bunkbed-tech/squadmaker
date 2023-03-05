@@ -2,7 +2,7 @@
 .direnv/
 
 # Ignore the flutter SDK
-flutter/
+/flutter/
 
 # Miscellaneous
 *.class
