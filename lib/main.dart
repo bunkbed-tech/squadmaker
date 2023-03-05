@@ -6,12 +6,12 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart'; // show getDatabasesPath, openDatabase;
 import 'dart:io'; // show Platform, Directory;
 import 'package:path_provider/path_provider.dart';
-import 'package:squadmaker/models/attendance.dart';
 import 'models/player.dart';
 import 'models/gender.dart';
 import 'models/league.dart';
 import 'models/user.dart';
 import 'models/attendance.dart';
+import 'models/game.dart';
 
 void main() async {
   String appDocPath = "";
@@ -39,6 +39,7 @@ void main() async {
       await db.execute(League.createSQLTable());
       await db.execute(User.createSQLTable());
       await db.execute(Attendance.createSQLTable());
+      await db.execute(Game.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -82,6 +83,16 @@ void main() async {
       Attendance(player: player1, game: "Game #1", attended: true);
   await attendance1.insert(database);
   print(await Attendance.list(database));
+
+  // Test add a game
+  var game1 = Game(
+      opponentName: "the other guys",
+      location: "usa",
+      startDatetime: "1234",
+      league: league1);
+  await game1.insert(database);
+  print(await Game.list(database));
+
 //   // TEST list
 //   print(await Player.players(db));
 
