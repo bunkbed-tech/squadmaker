@@ -12,3 +12,10 @@ enum AppTheme {
 enum ScoreNames {
   run
 }
+
+enum TrophyType {
+  perfect_attendance,
+  high_score_game,
+  high_score_league,
+  hat_trick
+}

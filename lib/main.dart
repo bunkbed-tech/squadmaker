@@ -15,7 +15,8 @@ import 'models/game.dart';
 import 'models/payment.dart';
 import 'models/score_type.dart';
 import 'models/score.dart';
-import 'models/enums.dart' show Sport, ScoreNames;
+import 'models/trophy.dart';
+import 'models/enums.dart' show Sport, ScoreNames, TrophyType;
 
 void main() async {
   String appDocPath = "";
@@ -47,6 +48,7 @@ void main() async {
       await db.execute(Payment.createSQLTable());
       await db.execute(ScoreType.createSQLTable());
       await db.execute(Score.createSQLTable());
+      await db.execute(Trophy.createSQLTable());
       await Gender.initialize(db);
     },
     version: 1,
@@ -115,6 +117,12 @@ void main() async {
   var score1 = Score(player: player1, game: game1, timestamp: "1234", scoreType: scoretype1);
   await score1.insert(database);
   print(await Score.list(database));
+
+  // Test add a trophy 
+  var Trophy1 = Trophy(player: player1, dateAwarded: "1234", trophyType: TrophyType.hat_trick);
+  await Trophy1.insert(database);
+  print(await Trophy.list(database));
+
 //   // TEST list
 //   print(await Player.players(db));
 
