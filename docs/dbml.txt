@@ -69,8 +69,8 @@ table score {
   id serial
   player_id int
   game_id int
-  time timestamp
-  type int [ref: > score_type.id]
+  timestamp timestamp
+  score_type_id int [ref: > score_type.id]
 }
 
 table score_type {
