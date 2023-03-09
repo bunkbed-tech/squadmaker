@@ -1,6 +1,8 @@
 import 'base.dart' show Base;
 import 'player.dart' show Player;
 import 'gender.dart' show Gender;
+import 'game.dart' show Game;
+import 'league.dart' show League;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Attendance extends Base {
@@ -9,7 +11,7 @@ class Attendance extends Base {
   String get tableName => _tableName;
 
   Player player;
-  String game; // should be a Game
+  Game game;
   bool attended;
 
   Attendance({
@@ -23,7 +25,7 @@ class Attendance extends Base {
   Map<String, dynamic> toMap() {
     return {
       "player_id": player.id,
-      "game": game, // should be an id
+      "game_id": game.id,
       "attended": attended ? 1 : 0,
     };
   }
@@ -33,15 +35,15 @@ class Attendance extends Base {
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
         player_id INTEGER NOT NULL REFERENCES player (id),
-        game TEXT NOT NULL,
-        attended INTEGER
+        game_id INTEGER NOT NULL REFERENCES game (id),
+        attended INTEGER NOT NULL
       );
     """;
   }
 
   @override
   String toString() {
-    return "Attendance{id: $id, player_name: ${player.name}, game: $game, attended: $attended}";
+    return "Attendance{id: $id, player_name: ${player.name}, game_opponent: ${game.opponentName}, attended: $attended}";
   }
 
   static Future<List<Attendance>> list(Database db) async {
@@ -59,10 +61,26 @@ class Attendance extends Base {
         player.score_all_time AS player__score_all_time,
         player.score_avg_per_game AS player__score_avg_per_game,
         player.games_attended AS player__games_attended,
-        gender.name AS gender__name
+        gender.name AS gender__name,
+        game.opponent_name AS game__opponent_name,
+        game.location AS game__location,
+        game.start_datetime AS game__start_datetime,
+        game.league_id AS game__league_id,
+        game.your_score AS game__your_score,
+        game.opponent_score AS game__opponent_score,
+        game.group_photo AS game__group_photo,
+        league.name AS league__name,
+        league.team_name AS league__team_name,
+        league.sport AS league__sport,
+        league.captain AS league__captain,
+        league.games_won AS league__games_won,
+        league.games_lost AS league__games_lost,
+        league.games_played AS league__games_played
       FROM attendance
       INNER JOIN player ON attendance.player_id = player.id
       INNER JOIN gender ON player.gender_id = gender.id
+      INNER JOIN game ON attendance.game_id = game.id
+      INNER JOIN league ON game.league_id = league.id
       """);
     return List.generate(maps.length, (i) {
       return Attendance(
@@ -82,7 +100,25 @@ class Attendance extends Base {
           scoreAvgPerGame: maps[i]["player__score_avg_per_game"],
           gamesAttended: maps[i]["player__games_attended"],
         ),
-        game: maps[i]["game"],
+        game: Game(
+          id: maps[i]["game_id"],
+          opponentName: maps[i]["game__opponent_name"],
+          location: maps[i]["game__location"],
+          startDatetime: maps[i]["game__start_datetime"],
+          league: League(
+            id: maps[i]["game__league_id"],
+            name: maps[i]["league__name"],
+            teamName: maps[i]["league__team_name"],
+            sport: maps[i]["league__sport"],
+            captain: maps[i]["league__captain"],
+            gamesWon: maps[i]["league__games_won"],
+            gamesLost: maps[i]["league__games_lost"],
+            gamesPlayed: maps[i]["league__games_played"],
+          ),
+          yourScore: maps[i]["game__your_score"],
+          opponentScore: maps[i]["game__opponent_score"],
+          groupPhoto: maps[i]["game__group_photo"],
+        ),
         attended: maps[i]["attended"] != 0,
       );
     });

@@ -87,12 +87,6 @@ void main() async {
   await user1.insert(database);
   print(await User.list(database));
 
-  // Test create an attendance
-  var attendance1 =
-      Attendance(player: player1, game: "Game #1", attended: true);
-  await attendance1.insert(database);
-  print(await Attendance.list(database));
-
   // Test add a game
   var game1 = Game(
       opponentName: "the other guys",
@@ -101,6 +95,11 @@ void main() async {
       league: league1);
   await game1.insert(database);
   print(await Game.list(database));
+
+  // Test create an attendance
+  var attendance1 = Attendance(player: player1, game: game1, attended: true);
+  await attendance1.insert(database);
+  print(await Attendance.list(database));
 
   // Test add a payment
   var payment1 = Payment(player: player1, league: league1, paid: true);
@@ -114,12 +113,14 @@ void main() async {
   print(await ScoreType.list(database));
 
   // Test add a score
-  var score1 = Score(player: player1, game: game1, timestamp: "1234", scoreType: scoretype1);
+  var score1 = Score(
+      player: player1, game: game1, timestamp: "1234", scoreType: scoretype1);
   await score1.insert(database);
   print(await Score.list(database));
 
-  // Test add a trophy 
-  var Trophy1 = Trophy(player: player1, dateAwarded: "1234", trophyType: TrophyType.hat_trick);
+  // Test add a trophy
+  var Trophy1 = Trophy(
+      player: player1, dateAwarded: "1234", trophyType: TrophyType.hat_trick);
   await Trophy1.insert(database);
   print(await Trophy.list(database));
 
