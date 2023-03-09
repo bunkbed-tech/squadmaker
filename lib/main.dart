@@ -120,7 +120,7 @@ void main() async {
 
   // Test add a trophy
   var Trophy1 = Trophy(
-      player: player1, dateAwarded: "1234", trophyType: TrophyType.hat_trick);
+      player: player1, dateAwarded: "1234", trophyType: TrophyType.hatTrick);
   await Trophy1.insert(database);
   print(await Trophy.list(database));
 
