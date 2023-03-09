@@ -1,10 +1,7 @@
 import 'base.dart' show Base;
-import 'game.dart' show Game;
 import 'gender.dart' show Gender;
-import 'league.dart' show League;
 import 'player.dart' show Player;
-import 'score_type.dart' show ScoreType;
-import 'enums.dart' show Sport, ScoreNames, TrophyType;
+import 'enums.dart' show TrophyType;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Trophy extends Base {
@@ -14,10 +11,13 @@ class Trophy extends Base {
 
   Player player;
   TrophyType trophyType;
-  String dateAwarded;  // should be a DateTime
+  DateTime dateAwarded;
 
   Trophy(
-      {int? id, required this.player, required this.trophyType, required this.dateAwarded})
+      {int? id,
+      required this.player,
+      required this.trophyType,
+      required this.dateAwarded})
       : super(id);
 
   @override
@@ -25,7 +25,7 @@ class Trophy extends Base {
     return {
       "player_id": player.id,
       "trophy_type": trophyType.name,
-      "date_awarded": dateAwarded,
+      "date_awarded": dateAwarded.toString(),
     };
   }
 
@@ -42,7 +42,7 @@ class Trophy extends Base {
 
   @override
   String toString() {
-    return "Trophy{id: $id, player_name: ${player.name}, trophy_type: ${trophyType.name}, date_awarded: ${dateAwarded}}";
+    return "Trophy{id: $id, player_name: ${player.name}, trophy_type: ${trophyType.name}, date_awarded: $dateAwarded}";
   }
 
   static Future<List<Trophy>> list(Database db) async {
@@ -76,7 +76,9 @@ class Trophy extends Base {
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"],
+          birthday: maps[i]["player__birthday"] == "null"
+              ? null
+              : DateTime.parse(maps[i]["player__birthday"]),
           placeFrom: maps[i]["player__place_from"],
           photo: maps[i]["player__photo"],
           scoreAllTime: maps[i]["player__score_all_time"],
@@ -84,8 +86,8 @@ class Trophy extends Base {
           gamesAttended: maps[i]["player__games_attended"],
         ),
         trophyType: TrophyType.values.firstWhere(
-              (e) => e.toString().split(".").last == maps[i]["trophy_type"]),
-        dateAwarded: maps[i]["date_awarded"],
+            (e) => e.toString().split(".").last == maps[i]["trophy_type"]),
+        dateAwarded: DateTime.parse(maps[i]["date_awarded"]),
       );
     });
   }

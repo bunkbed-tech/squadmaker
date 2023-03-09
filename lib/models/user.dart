@@ -13,7 +13,7 @@ class User extends Base {
   String? exportDir;
   String? theme; // should be an AppTheme (enum)
   String? avatar;
-  String? datetimeCreated; // should be a DateTime
+  DateTime? datetimeCreated;
 
   User({
     int? id,
@@ -29,6 +29,7 @@ class User extends Base {
 
   @override
   Map<String, dynamic> toMap() {
+    datetimeCreated ??= DateTime.now();
     return {
       "name": name,
       "email": email,
@@ -37,7 +38,7 @@ class User extends Base {
       "export_dir": exportDir,
       "theme": theme,
       "avatar": avatar,
-      "datetime_created": datetimeCreated,
+      "datetime_created": datetimeCreated.toString(),
     };
   }
 
@@ -74,7 +75,7 @@ class User extends Base {
         exportDir: maps[i]["export_dir"],
         theme: maps[i]["theme"],
         avatar: maps[i]["avatar"],
-        datetimeCreated: maps[i]["datetime_created"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
       );
     });
   }

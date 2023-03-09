@@ -55,6 +55,23 @@ void main() async {
   );
   print(await Gender.list(database));
 
+  var userA = User(
+    name: "Tahoe Schrader",
+    email: "tahoe@groton.com",
+  );
+  var userB = User(
+    name: "Tristan Schrader",
+    email: "tristan@groton.com",
+  );
+  assert(userA.datetimeCreated == null);
+  assert(userB.datetimeCreated == null);
+
+  await userA.insert(database);
+  await userB.insert(database);
+
+  print(userA.datetimeCreated);
+  print(userB.datetimeCreated);
+
   // TEST create a player
   var player1 = Player(
     name: "Player1",
@@ -91,7 +108,7 @@ void main() async {
   var game1 = Game(
       opponentName: "the other guys",
       location: "usa",
-      startDatetime: "1234",
+      startDatetime: DateTime.now(),
       league: league1);
   await game1.insert(database);
   print(await Game.list(database));
@@ -114,14 +131,19 @@ void main() async {
 
   // Test add a score
   var score1 = Score(
-      player: player1, game: game1, timestamp: "1234", scoreType: scoretype1);
+      player: player1,
+      game: game1,
+      timestamp: DateTime.now(),
+      scoreType: scoretype1);
   await score1.insert(database);
   print(await Score.list(database));
 
   // Test add a trophy
-  var Trophy1 = Trophy(
-      player: player1, dateAwarded: "1234", trophyType: TrophyType.hatTrick);
-  await Trophy1.insert(database);
+  var trophy1 = Trophy(
+      player: player1,
+      dateAwarded: DateTime.now(),
+      trophyType: TrophyType.hatTrick);
+  await trophy1.insert(database);
   print(await Trophy.list(database));
 
 //   // TEST list

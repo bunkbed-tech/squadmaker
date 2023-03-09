@@ -14,11 +14,15 @@ class Score extends Base {
 
   Player player;
   Game game;
-  String timestamp;  // should be a DateTime
+  DateTime timestamp;
   ScoreType scoreType;
 
   Score(
-      {int? id, required this.player, required this.game, required this.timestamp, required this.scoreType})
+      {int? id,
+      required this.player,
+      required this.game,
+      required this.timestamp,
+      required this.scoreType})
       : super(id);
 
   @override
@@ -26,7 +30,7 @@ class Score extends Base {
     return {
       "player_id": player.id,
       "game_id": game.id,
-      "timestamp": timestamp,
+      "timestamp": timestamp.toString(),
       "score_type_id": scoreType.id,
     };
   }
@@ -99,7 +103,9 @@ class Score extends Base {
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"],
+          birthday: maps[i]["player__birthday"] == "null"
+              ? null
+              : DateTime.parse(maps[i]["player__birthday"]),
           placeFrom: maps[i]["player__place_from"],
           photo: maps[i]["player__photo"],
           scoreAllTime: maps[i]["player__score_all_time"],
@@ -110,7 +116,7 @@ class Score extends Base {
           id: maps[i]["game_id"],
           opponentName: maps[i]["game__opponent_name"],
           location: maps[i]["game__location"],
-          startDatetime: maps[i]["game__start_datetime"],
+          startDatetime: DateTime.parse(maps[i]["game__start_datetime"]),
           league: League(
             id: maps[i]["game__league_id"],
             name: maps[i]["league__name"],
@@ -125,14 +131,14 @@ class Score extends Base {
           opponentScore: maps[i]["game__opponent_score"],
           groupPhoto: maps[i]["game__group_photo"],
         ),
-        timestamp: maps[i]["timestamp"],
+        timestamp: DateTime.parse(maps[i]["timestamp"]),
         scoreType: ScoreType(
           id: maps[i]["score_type_id"],
           value: maps[i]["score_type__value"],
-          sport: Sport.values.firstWhere(
-              (e) => e.toString().split(".").last == maps[i]["score_type__sport"]),
-          name: ScoreNames.values
-              .firstWhere((e) => e.toString().split(".").last == maps[i]["score_type__name"]),
+          sport: Sport.values.firstWhere((e) =>
+              e.toString().split(".").last == maps[i]["score_type__sport"]),
+          name: ScoreNames.values.firstWhere((e) =>
+              e.toString().split(".").last == maps[i]["score_type__name"]),
         ),
       );
     });

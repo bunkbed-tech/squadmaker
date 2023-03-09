@@ -81,7 +81,9 @@ class Payment extends Base {
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"],
+          birthday: maps[i]["player__birthday"] == "null"
+              ? null
+              : DateTime.parse(maps[i]["player__birthday"]),
           placeFrom: maps[i]["player__place_from"],
           photo: maps[i]["player__photo"],
           scoreAllTime: maps[i]["player__score_all_time"],

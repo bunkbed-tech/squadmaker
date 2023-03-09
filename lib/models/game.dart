@@ -9,7 +9,7 @@ class Game extends Base {
 
   String opponentName;
   String location;
-  String startDatetime; // make this a Datetime
+  DateTime startDatetime;
   League league;
   int? yourScore;
   int? opponentScore;
@@ -31,7 +31,7 @@ class Game extends Base {
     return {
       "opponent_name": opponentName,
       "location": location,
-      "start_datetime": startDatetime,
+      "start_datetime": startDatetime.toString(),
       "league_id": league.id,
       "your_score": yourScore,
       "opponent_score": opponentScore,
@@ -79,7 +79,7 @@ class Game extends Base {
         id: maps[i]["id"],
         opponentName: maps[i]["opponent_name"],
         location: maps[i]["location"],
-        startDatetime: maps[i]["start_datetime"],
+        startDatetime: DateTime.parse(maps[i]["start_datetime"]),
         league: League(
           id: maps[i]["league_id"],
           name: maps[i]["league__name"],

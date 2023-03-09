@@ -93,7 +93,9 @@ class Attendance extends Base {
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"],
+          birthday: maps[i]["player__birthday"] == "null"
+              ? null
+              : DateTime.parse(maps[i]["player__birthday"]),
           placeFrom: maps[i]["player__place_from"],
           photo: maps[i]["player__photo"],
           scoreAllTime: maps[i]["player__score_all_time"],
@@ -104,7 +106,7 @@ class Attendance extends Base {
           id: maps[i]["game_id"],
           opponentName: maps[i]["game__opponent_name"],
           location: maps[i]["game__location"],
-          startDatetime: maps[i]["game__start_datetime"],
+          startDatetime: DateTime.parse(maps[i]["game__start_datetime"]),
           league: League(
             id: maps[i]["game__league_id"],
             name: maps[i]["league__name"],

@@ -11,7 +11,7 @@ class Player extends Base {
   String email;
   Gender gender;
   String phone;
-  String? birthday;
+  DateTime? birthday;
   String? pronouns;
   String? placeFrom;
   String? photo;
@@ -42,7 +42,7 @@ class Player extends Base {
       "pronouns": pronouns,
       "phone": phone,
       "email": email,
-      "birthday": birthday,
+      "birthday": birthday.toString(),
       "place_from": placeFrom,
       "photo": photo,
       "score_all_time": scoreAllTime,
@@ -90,7 +90,9 @@ class Player extends Base {
         name: maps[i]["name"],
         gender: Gender(id: maps[i]["gender_id"], name: maps[i]["gender__name"]),
         pronouns: maps[i]["pronouns"],
-        birthday: maps[i]["birthday"],
+        birthday: maps[i]["birthday"] == "null"
+            ? null
+            : DateTime.parse(maps[i]["birthday"]),
         phone: maps[i]["phone"],
         email: maps[i]["email"],
         placeFrom: maps[i]["place_from"],
