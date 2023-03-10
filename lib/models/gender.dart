@@ -14,6 +14,15 @@ class Gender extends Base {
     required this.name,
   }) : super(id, datetimeCreated);
 
+  Gender.fromOther(Map<String, dynamic> other)
+      : name = other["gender__name"],
+        super(other["player__gender_id"],
+            DateTime.parse(other["gender__datetime_created"]));
+
+  Gender.fromSelf(Map<String, dynamic> self)
+      : name = self["name"],
+        super(self["id"], DateTime.parse(self["datetime_created"]));
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -40,11 +49,7 @@ class Gender extends Base {
   static Future<List<Gender>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.query(_tableName);
     return List.generate(maps.length, (i) {
-      return Gender(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        name: maps[i]["name"],
-      );
+      return Gender.fromSelf(maps[i]);
     });
   }
 

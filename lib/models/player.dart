@@ -35,6 +35,39 @@ class Player extends Base {
     this.gamesAttended,
   }) : super(id, datetimeCreated);
 
+  Player.fromOther(Map<String, dynamic> other)
+      : name = other["player__name"],
+        gender = Gender.fromOther(other),
+        pronouns = other["player__pronouns"],
+        phone = other["player__phone"],
+        email = other["player__email"],
+        birthday = other["player__birthday"] == "null"
+            ? null
+            : DateTime.parse(other["player__birthday"]),
+        placeFrom = other["player__place_from"],
+        photo = other["player__photo"],
+        scoreAllTime = other["player__score_all_time"],
+        scoreAvgPerGame = other["player__score_avg_per_game"],
+        gamesAttended = other["player__games_attended"],
+        super(other["player_id"],
+            DateTime.parse(other["player__datetime_created"]));
+
+  Player.fromSelf(Map<String, dynamic> self)
+      : name = self["name"],
+        gender = Gender.fromOther(self),
+        pronouns = self["pronouns"],
+        phone = self["phone"],
+        email = self["email"],
+        birthday = self["birthday"] == "null"
+            ? null
+            : DateTime.parse(self["birthday"]),
+        placeFrom = self["place_from"],
+        photo = self["photo"],
+        scoreAllTime = self["score_all_time"],
+        scoreAvgPerGame = self["score_avg_per_game"],
+        gamesAttended = self["games_attended"],
+        super(self["id"], DateTime.parse(self["datetime_created"]));
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -89,27 +122,7 @@ class Player extends Base {
       """);
 
     return List.generate(maps.length, (i) {
-      return Player(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        name: maps[i]["name"],
-        gender: Gender(
-          id: maps[i]["gender_id"],
-          datetimeCreated: DateTime.parse(maps[i]["gender__datetime_created"]),
-          name: maps[i]["gender__name"],
-        ),
-        pronouns: maps[i]["pronouns"],
-        birthday: maps[i]["birthday"] == "null"
-            ? null
-            : DateTime.parse(maps[i]["birthday"]),
-        phone: maps[i]["phone"],
-        email: maps[i]["email"],
-        placeFrom: maps[i]["place_from"],
-        photo: maps[i]["photo"],
-        scoreAllTime: maps[i]["score_all_time"],
-        scoreAvgPerGame: maps[i]["score_avg_per_game"],
-        gamesAttended: maps[i]["games_attended"],
-      );
+      return Player.fromSelf(maps[i]);
     });
   }
 }

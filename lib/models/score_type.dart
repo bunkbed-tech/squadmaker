@@ -19,6 +19,23 @@ class ScoreType extends Base {
     required this.name,
   }) : super(id, datetimeCreated);
 
+  ScoreType.fromOther(Map<String, dynamic> other)
+      : value = other["score_type__value"],
+        sport = Sport.values.firstWhere(
+            (e) => e.toString().split(".").last == other["score_type__sport"]),
+        name = ScoreNames.values.firstWhere(
+            (e) => e.toString().split(".").last == other["score_type__name"]),
+        super(other["score_type_id"],
+            DateTime.parse(other["score_type__datetime_created"]));
+
+  ScoreType.fromSelf(Map<String, dynamic> self)
+      : value = self["value"],
+        sport = Sport.values
+            .firstWhere((e) => e.toString().split(".").last == self["sport"]),
+        name = ScoreNames.values
+            .firstWhere((e) => e.toString().split(".").last == self["name"]),
+        super(self["id"], DateTime.parse(self["datetime_created"]));
+
   static String createSQLTable() {
     return """
       CREATE TABLE $_tableName (
@@ -53,15 +70,7 @@ class ScoreType extends Base {
       FROM score_type
       """);
     return List.generate(maps.length, (i) {
-      return ScoreType(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        value: maps[i]["value"],
-        sport: Sport.values.firstWhere(
-            (e) => e.toString().split(".").last == maps[i]["sport"]),
-        name: ScoreNames.values
-            .firstWhere((e) => e.toString().split(".").last == maps[i]["name"]),
-      );
+      return ScoreType.fromSelf(maps[i]);
     });
   }
 }

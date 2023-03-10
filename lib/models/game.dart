@@ -27,6 +27,27 @@ class Game extends Base {
     this.groupPhoto,
   }) : super(id, datetimeCreated);
 
+  Game.fromOther(Map<String, dynamic> other)
+      : opponentName = other["game__opponent_name"],
+        location = other["game__location"],
+        startDatetime = DateTime.parse(other["game__start_datetime"]),
+        league = League.fromOther(other),
+        yourScore = other["game__your_score"],
+        opponentScore = other["game__opponent_score"],
+        groupPhoto = other["game__group_photo"],
+        super(
+            other["game_id"], DateTime.parse(other["game__datetime_created"]));
+
+  Game.fromSelf(Map<String, dynamic> self)
+      : opponentName = self["opponent_name"],
+        location = self["location"],
+        startDatetime = DateTime.parse(self["start_datetime"]),
+        league = League.fromOther(self),
+        yourScore = self["your_score"],
+        opponentScore = self["opponent_score"],
+        groupPhoto = self["group_photo"],
+        super(self["id"], DateTime.parse(self["datetime_created"]));
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -79,27 +100,7 @@ class Game extends Base {
       """);
 
     return List.generate(maps.length, (i) {
-      return Game(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        opponentName: maps[i]["opponent_name"],
-        location: maps[i]["location"],
-        startDatetime: DateTime.parse(maps[i]["start_datetime"]),
-        league: League(
-          id: maps[i]["league_id"],
-          datetimeCreated: DateTime.parse(maps[i]["league__datetime_created"]),
-          name: maps[i]["league__name"],
-          teamName: maps[i]["league__team_name"],
-          sport: maps[i]["league__sport"],
-          captain: maps[i]["league__captain"],
-          gamesWon: maps[i]["league__games_won"],
-          gamesLost: maps[i]["league__games_lost"],
-          gamesPlayed: maps[i]["league__games_played"],
-        ),
-        yourScore: maps[i]["your_score"],
-        opponentScore: maps[i]["opponent_score"],
-        groupPhoto: maps[i]["group_photo"],
-      );
+      return Game.fromSelf(maps[i]);
     });
   }
 }

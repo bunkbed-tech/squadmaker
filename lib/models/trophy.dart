@@ -21,6 +21,13 @@ class Trophy extends Base {
       required this.dateAwarded})
       : super(id, datetimeCreated);
 
+  Trophy.fromSelf(Map<String, dynamic> another)
+      : player = Player.fromOther(another),
+        trophyType = TrophyType.values.firstWhere(
+            (e) => e.toString().split(".").last == another["trophy_type"]),
+        dateAwarded = DateTime.parse(another["date_awarded"]),
+        super(another["id"], DateTime.parse(another["datetime_created"]));
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -71,34 +78,7 @@ class Trophy extends Base {
       INNER JOIN gender ON player.gender_id = gender.id
       """);
     return List.generate(maps.length, (i) {
-      return Trophy(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        player: Player(
-          id: maps[i]["player_id"],
-          datetimeCreated: DateTime.parse(maps[i]["player__datetime_created"]),
-          name: maps[i]["player__name"],
-          gender: Gender(
-              id: maps[i]["player__gender_id"],
-              datetimeCreated:
-                  DateTime.parse(maps[i]["gender__datetime_created"]),
-              name: maps[i]["gender__name"]),
-          pronouns: maps[i]["player__pronouns"],
-          phone: maps[i]["player__phone"],
-          email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"] == "null"
-              ? null
-              : DateTime.parse(maps[i]["player__birthday"]),
-          placeFrom: maps[i]["player__place_from"],
-          photo: maps[i]["player__photo"],
-          scoreAllTime: maps[i]["player__score_all_time"],
-          scoreAvgPerGame: maps[i]["player__score_avg_per_game"],
-          gamesAttended: maps[i]["player__games_attended"],
-        ),
-        trophyType: TrophyType.values.firstWhere(
-            (e) => e.toString().split(".").last == maps[i]["trophy_type"]),
-        dateAwarded: DateTime.parse(maps[i]["date_awarded"]),
-      );
+      return Trophy.fromSelf(maps[i]);
     });
   }
 }

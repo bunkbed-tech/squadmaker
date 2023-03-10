@@ -21,6 +21,12 @@ class Payment extends Base {
     required this.paid,
   }) : super(id, datetimeCreated);
 
+  Payment.fromSelf(Map<String, dynamic> self)
+      : player = Player.fromOther(self),
+        league = League.fromOther(self),
+        paid = self["paid"] != 0,
+        super(self["id"], DateTime.parse(self["datetime_created"]));
+
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -80,43 +86,7 @@ class Payment extends Base {
       INNER JOIN league ON payment.league_id = league.id
       """);
     return List.generate(maps.length, (i) {
-      return Payment(
-        id: maps[i]["id"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
-        player: Player(
-          id: maps[i]["player_id"],
-          datetimeCreated: DateTime.parse(maps[i]["player__datetime_created"]),
-          name: maps[i]["player__name"],
-          gender: Gender(
-              datetimeCreated:
-                  DateTime.parse(maps[i]["gender__datetime_created"]),
-              id: maps[i]["player__gender_id"],
-              name: maps[i]["gender__name"]),
-          pronouns: maps[i]["player__pronouns"],
-          phone: maps[i]["player__phone"],
-          email: maps[i]["player__email"],
-          birthday: maps[i]["player__birthday"] == "null"
-              ? null
-              : DateTime.parse(maps[i]["player__birthday"]),
-          placeFrom: maps[i]["player__place_from"],
-          photo: maps[i]["player__photo"],
-          scoreAllTime: maps[i]["player__score_all_time"],
-          scoreAvgPerGame: maps[i]["player__score_avg_per_game"],
-          gamesAttended: maps[i]["player__games_attended"],
-        ),
-        league: League(
-          id: maps[i]["league_id"],
-          datetimeCreated: DateTime.parse(maps[i]["league__datetime_created"]),
-          name: maps[i]["league__name"],
-          teamName: maps[i]["league__team_name"],
-          sport: maps[i]["league__sport"],
-          captain: maps[i]["league__captain"],
-          gamesWon: maps[i]["league__games_won"],
-          gamesLost: maps[i]["league__games_lost"],
-          gamesPlayed: maps[i]["league__games_played"],
-        ),
-        paid: maps[i]["paid"] != 0,
-      );
+      return Payment.fromSelf(maps[i]);
     });
   }
 }
