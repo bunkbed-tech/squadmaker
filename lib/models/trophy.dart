@@ -1,5 +1,4 @@
 import 'base.dart' show Base;
-import 'gender.dart' show Gender;
 import 'player.dart' show Player;
 import 'enums.dart' show TrophyType;
 import 'package:sqflite/sqflite.dart' show Database;

@@ -1,10 +1,7 @@
 import 'base.dart' show Base;
 import 'game.dart' show Game;
-import 'gender.dart' show Gender;
-import 'league.dart' show League;
 import 'player.dart' show Player;
 import 'score_type.dart' show ScoreType;
-import 'enums.dart' show Sport, ScoreNames;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Score extends Base {
