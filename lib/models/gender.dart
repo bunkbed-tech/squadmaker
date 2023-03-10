@@ -10,13 +10,15 @@ class Gender extends Base {
 
   Gender({
     int? id,
+    DateTime? datetimeCreated,
     required this.name,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
     return {
       "name": name,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -24,6 +26,7 @@ class Gender extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         name TEXT UNIQUE
       );
     """;
@@ -39,6 +42,7 @@ class Gender extends Base {
     return List.generate(maps.length, (i) {
       return Gender(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         name: maps[i]["name"],
       );
     });
@@ -46,9 +50,10 @@ class Gender extends Base {
 
   static Future<void> initialize(Database db) async {
     Batch batch = db.batch();
-    batch.insert(_tableName, {'name': 'man'});
-    batch.insert(_tableName, {'name': 'woman'});
-    batch.insert(_tableName, {'name': 'other'});
+    String now = DateTime.now().toString();
+    batch.insert(_tableName, {'name': 'man', 'datetime_created': now});
+    batch.insert(_tableName, {'name': 'woman', 'datetime_created': now});
+    batch.insert(_tableName, {'name': 'other', 'datetime_created': now});
     await batch.commit();
   }
 }

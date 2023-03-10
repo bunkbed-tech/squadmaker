@@ -16,6 +16,7 @@ class League extends Base {
 
   League({
     int? id,
+    DateTime? datetimeCreated,
     required this.name,
     required this.teamName,
     required this.sport,
@@ -23,7 +24,7 @@ class League extends Base {
     this.gamesWon,
     this.gamesLost,
     this.gamesPlayed,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -35,6 +36,7 @@ class League extends Base {
       "games_won": gamesWon,
       "games_lost": gamesLost,
       "games_played": gamesPlayed,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -42,6 +44,7 @@ class League extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
         team_name TEXT NOT NULL,
         sport TEXT NOT NULL,
@@ -63,6 +66,7 @@ class League extends Base {
     return List.generate(maps.length, (i) {
       return League(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         name: maps[i]["name"],
         teamName: maps[i]["team_name"],
         sport: maps[i]["sport"],

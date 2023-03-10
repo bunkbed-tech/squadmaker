@@ -13,10 +13,10 @@ class User extends Base {
   String? exportDir;
   String? theme; // should be an AppTheme (enum)
   String? avatar;
-  DateTime? datetimeCreated;
 
   User({
     int? id,
+    DateTime? datetimeCreated,
     required this.name,
     required this.email,
     this.username,
@@ -24,12 +24,10 @@ class User extends Base {
     this.exportDir,
     this.theme,
     this.avatar,
-    this.datetimeCreated,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
-    datetimeCreated ??= DateTime.now();
     return {
       "name": name,
       "email": email,
@@ -38,7 +36,7 @@ class User extends Base {
       "export_dir": exportDir,
       "theme": theme,
       "avatar": avatar,
-      "datetime_created": datetimeCreated.toString(),
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -46,14 +44,14 @@ class User extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         username TEXT,
         password_hash TEXT,
         export_dir TEXT,
         theme TEXT,
-        avatar TEXT,
-        datetime_created TEXT
+        avatar TEXT
       );
     """;
   }
@@ -68,6 +66,7 @@ class User extends Base {
     return List.generate(maps.length, (i) {
       return User(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         name: maps[i]["name"],
         email: maps[i]["email"],
         username: maps[i]["username"],
@@ -75,7 +74,6 @@ class User extends Base {
         exportDir: maps[i]["export_dir"],
         theme: maps[i]["theme"],
         avatar: maps[i]["avatar"],
-        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
       );
     });
   }

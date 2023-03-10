@@ -15,10 +15,11 @@ class Trophy extends Base {
 
   Trophy(
       {int? id,
+      DateTime? datetimeCreated,
       required this.player,
       required this.trophyType,
       required this.dateAwarded})
-      : super(id);
+      : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -26,6 +27,7 @@ class Trophy extends Base {
       "player_id": player.id,
       "trophy_type": trophyType.name,
       "date_awarded": dateAwarded.toString(),
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -33,6 +35,7 @@ class Trophy extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         player_id INTEGER NOT NULL REFERENCES player (id),
         trophy_type TEXT NOT NULL,
         date_awarded TEXT NOT NULL
@@ -49,6 +52,7 @@ class Trophy extends Base {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         trophy.*,
+        player.datetime_created AS player__datetime_created,
         player.name AS player__name,
         player.gender_id AS player__gender_id,
         player.pronouns AS player__pronouns,
@@ -60,6 +64,7 @@ class Trophy extends Base {
         player.score_all_time AS player__score_all_time,
         player.score_avg_per_game AS player__score_avg_per_game,
         player.games_attended AS player__games_attended,
+        gender.datetime_created AS gender__datetime_created,
         gender.name AS gender__name
       FROM trophy 
       INNER JOIN player ON trophy.player_id = player.id
@@ -68,11 +73,16 @@ class Trophy extends Base {
     return List.generate(maps.length, (i) {
       return Trophy(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         player: Player(
           id: maps[i]["player_id"],
+          datetimeCreated: DateTime.parse(maps[i]["player__datetime_created"]),
           name: maps[i]["player__name"],
           gender: Gender(
-              id: maps[i]["player__gender_id"], name: maps[i]["gender__name"]),
+              id: maps[i]["player__gender_id"],
+              datetimeCreated:
+                  DateTime.parse(maps[i]["gender__datetime_created"]),
+              name: maps[i]["gender__name"]),
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],

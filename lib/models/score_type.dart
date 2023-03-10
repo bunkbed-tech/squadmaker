@@ -11,14 +11,19 @@ class ScoreType extends Base {
   Sport sport; // currently using an enum
   ScoreNames name; // currently using enum
 
-  ScoreType(
-      {int? id, required this.value, required this.sport, required this.name})
-      : super(id);
+  ScoreType({
+    int? id,
+    DateTime? datetimeCreated,
+    required this.value,
+    required this.sport,
+    required this.name,
+  }) : super(id, datetimeCreated);
 
   static String createSQLTable() {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         value INTEGER,
         sport TEXT NOT NULL,
         name TEXT NOT NULL
@@ -32,6 +37,7 @@ class ScoreType extends Base {
       "value": value,
       "sport": sport.name,
       "name": name.name,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -49,6 +55,7 @@ class ScoreType extends Base {
     return List.generate(maps.length, (i) {
       return ScoreType(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         value: maps[i]["value"],
         sport: Sport.values.firstWhere(
             (e) => e.toString().split(".").last == maps[i]["sport"]),

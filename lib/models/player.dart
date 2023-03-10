@@ -21,6 +21,7 @@ class Player extends Base {
 
   Player({
     int? id,
+    DateTime? datetimeCreated,
     required this.name,
     required this.email,
     required this.gender,
@@ -32,7 +33,7 @@ class Player extends Base {
     this.scoreAllTime,
     this.scoreAvgPerGame,
     this.gamesAttended,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -48,6 +49,7 @@ class Player extends Base {
       "score_all_time": scoreAllTime,
       "score_avg_per_game": scoreAvgPerGame,
       "games_attended": gamesAttended,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -55,6 +57,7 @@ class Player extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
         gender_id INTEGER NOT NULL REFERENCES gender (id),
         pronouns TEXT,
@@ -79,6 +82,7 @@ class Player extends Base {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         player.*,
+        gender.datetime_created AS gender__datetime_created,
         gender.name AS gender__name
       FROM player
       INNER JOIN gender ON player.gender_id = gender.id
@@ -87,8 +91,13 @@ class Player extends Base {
     return List.generate(maps.length, (i) {
       return Player(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         name: maps[i]["name"],
-        gender: Gender(id: maps[i]["gender_id"], name: maps[i]["gender__name"]),
+        gender: Gender(
+          id: maps[i]["gender_id"],
+          datetimeCreated: DateTime.parse(maps[i]["gender__datetime_created"]),
+          name: maps[i]["gender__name"],
+        ),
         pronouns: maps[i]["pronouns"],
         birthday: maps[i]["birthday"] == "null"
             ? null

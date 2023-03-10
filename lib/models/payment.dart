@@ -13,9 +13,13 @@ class Payment extends Base {
   League league;
   bool paid;
 
-  Payment(
-      {int? id, required this.player, required this.league, required this.paid})
-      : super(id);
+  Payment({
+    int? id,
+    DateTime? datetimeCreated,
+    required this.player,
+    required this.league,
+    required this.paid,
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -23,6 +27,7 @@ class Payment extends Base {
       "player_id": player.id,
       "league_id": league.id,
       "paid": paid ? 1 : 0,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -30,6 +35,7 @@ class Payment extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         player_id INTEGER NOT NULL REFERENCES player (id),
         league_id INTEGER NOT NULL REFERENCES league (id),
         paid INTEGER
@@ -46,6 +52,7 @@ class Payment extends Base {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         payment.*,
+        player.datetime_created AS player__datetime_created,
         player.name AS player__name,
         player.gender_id AS player__gender_id,
         player.pronouns AS player__pronouns,
@@ -57,7 +64,9 @@ class Payment extends Base {
         player.score_all_time AS player__score_all_time,
         player.score_avg_per_game AS player__score_avg_per_game,
         player.games_attended AS player__games_attended,
+        gender.datetime_created AS gender__datetime_created,
         gender.name AS gender__name,
+        league.datetime_created AS league__datetime_created,
         league.name AS league__name,
         league.team_name AS league__team_name,
         league.sport AS league__sport,
@@ -73,11 +82,16 @@ class Payment extends Base {
     return List.generate(maps.length, (i) {
       return Payment(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         player: Player(
           id: maps[i]["player_id"],
+          datetimeCreated: DateTime.parse(maps[i]["player__datetime_created"]),
           name: maps[i]["player__name"],
           gender: Gender(
-              id: maps[i]["player__gender_id"], name: maps[i]["gender__name"]),
+              datetimeCreated:
+                  DateTime.parse(maps[i]["gender__datetime_created"]),
+              id: maps[i]["player__gender_id"],
+              name: maps[i]["gender__name"]),
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
@@ -92,6 +106,7 @@ class Payment extends Base {
         ),
         league: League(
           id: maps[i]["league_id"],
+          datetimeCreated: DateTime.parse(maps[i]["league__datetime_created"]),
           name: maps[i]["league__name"],
           teamName: maps[i]["league__team_name"],
           sport: maps[i]["league__sport"],

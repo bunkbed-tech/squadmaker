@@ -2,12 +2,18 @@ import 'package:sqflite/sqflite.dart' show Database, ConflictAlgorithm;
 
 abstract class Base {
   int? id;
+  DateTime? datetimeCreated;
 
-  Base(this.id);
+  Base(this.id, this.datetimeCreated);
 
   String get tableName;
 
-  Map<String, dynamic> toMap();
+  Map<String, dynamic> toMap() {
+    datetimeCreated ??= DateTime.now();
+    return {
+      "datetime_created": datetimeCreated.toString(),
+    };
+  }
 
   Future<void> insert(Database db) async {
     id = await db.insert(tableName, toMap(),

@@ -17,6 +17,7 @@ class Game extends Base {
 
   Game({
     int? id,
+    DateTime? datetimeCreated,
     required this.opponentName,
     required this.location,
     required this.startDatetime,
@@ -24,7 +25,7 @@ class Game extends Base {
     this.yourScore,
     this.opponentScore,
     this.groupPhoto,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -36,6 +37,7 @@ class Game extends Base {
       "your_score": yourScore,
       "opponent_score": opponentScore,
       "group_photo": groupPhoto,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -43,6 +45,7 @@ class Game extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
         opponent_name TEXT NOT NULL,
         location TEXT NOT NULL,
         start_datetime TEXT NOT NULL,
@@ -63,6 +66,7 @@ class Game extends Base {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         game.*,
+        league.datetime_created AS league__datetime_created,
         league.name AS league__name,
         league.team_name AS league__team_name,
         league.sport AS league__sport,
@@ -77,11 +81,13 @@ class Game extends Base {
     return List.generate(maps.length, (i) {
       return Game(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         opponentName: maps[i]["opponent_name"],
         location: maps[i]["location"],
         startDatetime: DateTime.parse(maps[i]["start_datetime"]),
         league: League(
           id: maps[i]["league_id"],
+          datetimeCreated: DateTime.parse(maps[i]["league__datetime_created"]),
           name: maps[i]["league__name"],
           teamName: maps[i]["league__team_name"],
           sport: maps[i]["league__sport"],

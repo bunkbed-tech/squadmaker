@@ -16,10 +16,11 @@ class Attendance extends Base {
 
   Attendance({
     int? id,
+    DateTime? datetimeCreated,
     required this.player,
     required this.game,
     required this.attended,
-  }) : super(id);
+  }) : super(id, datetimeCreated);
 
   @override
   Map<String, dynamic> toMap() {
@@ -27,6 +28,7 @@ class Attendance extends Base {
       "player_id": player.id,
       "game_id": game.id,
       "attended": attended ? 1 : 0,
+      "datetime_created": super.toMap()["datetime_created"],
     };
   }
 
@@ -34,6 +36,7 @@ class Attendance extends Base {
     return """
       CREATE TABLE $_tableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        datetime_created TEXT NOT NULL,
         player_id INTEGER NOT NULL REFERENCES player (id),
         game_id INTEGER NOT NULL REFERENCES game (id),
         attended INTEGER NOT NULL
@@ -50,6 +53,7 @@ class Attendance extends Base {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
         attendance.*,
+        player.datetime_created AS player__datetime_created,
         player.name AS player__name,
         player.gender_id AS player__gender_id,
         player.pronouns AS player__pronouns,
@@ -61,7 +65,9 @@ class Attendance extends Base {
         player.score_all_time AS player__score_all_time,
         player.score_avg_per_game AS player__score_avg_per_game,
         player.games_attended AS player__games_attended,
+        gender.datetime_created AS gender__datetime_created,
         gender.name AS gender__name,
+        game.datetime_created AS game__datetime_created,
         game.opponent_name AS game__opponent_name,
         game.location AS game__location,
         game.start_datetime AS game__start_datetime,
@@ -69,6 +75,7 @@ class Attendance extends Base {
         game.your_score AS game__your_score,
         game.opponent_score AS game__opponent_score,
         game.group_photo AS game__group_photo,
+        league.datetime_created AS league__datetime_created,
         league.name AS league__name,
         league.team_name AS league__team_name,
         league.sport AS league__sport,
@@ -85,11 +92,16 @@ class Attendance extends Base {
     return List.generate(maps.length, (i) {
       return Attendance(
         id: maps[i]["id"],
+        datetimeCreated: DateTime.parse(maps[i]["datetime_created"]),
         player: Player(
           id: maps[i]["player_id"],
+          datetimeCreated: DateTime.parse(maps[i]["player__datetime_created"]),
           name: maps[i]["player__name"],
           gender: Gender(
-              id: maps[i]["player__gender_id"], name: maps[i]["gender__name"]),
+              id: maps[i]["player__gender_id"],
+              datetimeCreated:
+                  DateTime.parse(maps[i]["gender__datetime_created"]),
+              name: maps[i]["gender__name"]),
           pronouns: maps[i]["player__pronouns"],
           phone: maps[i]["player__phone"],
           email: maps[i]["player__email"],
@@ -104,11 +116,14 @@ class Attendance extends Base {
         ),
         game: Game(
           id: maps[i]["game_id"],
+          datetimeCreated: DateTime.parse(maps[i]["game__datetime_created"]),
           opponentName: maps[i]["game__opponent_name"],
           location: maps[i]["game__location"],
           startDatetime: DateTime.parse(maps[i]["game__start_datetime"]),
           league: League(
             id: maps[i]["game__league_id"],
+            datetimeCreated:
+                DateTime.parse(maps[i]["league__datetime_created"]),
             name: maps[i]["league__name"],
             teamName: maps[i]["league__team_name"],
             sport: maps[i]["league__sport"],
