@@ -43,4 +43,4 @@ if $delete_db; then
 fi
 
 echo "Running flutter application ... "
-flutter run
+flutter run -d macos 
