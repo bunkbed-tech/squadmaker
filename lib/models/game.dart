@@ -3,9 +3,9 @@ import 'league.dart' show League;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Game extends Base {
-  static const String _tableName = "game";
+  static const String staticTableName = "game";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   String opponentName;
   String location;
@@ -14,6 +14,18 @@ class Game extends Base {
   int? yourScore;
   int? opponentScore;
   String? groupPhoto;
+
+  static const String selectStatement = """
+        game.opponent_name AS game__opponent_name,
+        game.location AS game__location,
+        game.start_datetime AS game__start_datetime,
+        game.league_id AS game__league_id,
+        game.your_score AS game__your_score,
+        game.opponent_score AS game__opponent_score,
+        game.group_photo AS game__group_photo,
+        game.datetime_created AS game__datetime_created,
+        game.id AS game__id
+        """;
 
   Game({
     int? id,
@@ -27,26 +39,16 @@ class Game extends Base {
     this.groupPhoto,
   }) : super(id, datetimeCreated);
 
-  Game.fromOther(Map<String, dynamic> other)
+  Game.create(Map<String, dynamic> other)
       : opponentName = other["game__opponent_name"],
         location = other["game__location"],
         startDatetime = DateTime.parse(other["game__start_datetime"]),
-        league = League.fromOther(other),
+        league = League.create(other),
         yourScore = other["game__your_score"],
         opponentScore = other["game__opponent_score"],
         groupPhoto = other["game__group_photo"],
         super(
-            other["game_id"], DateTime.parse(other["game__datetime_created"]));
-
-  Game.fromSelf(Map<String, dynamic> self)
-      : opponentName = self["opponent_name"],
-        location = self["location"],
-        startDatetime = DateTime.parse(self["start_datetime"]),
-        league = League.fromOther(self),
-        yourScore = self["your_score"],
-        opponentScore = self["opponent_score"],
-        groupPhoto = self["group_photo"],
-        super(self["id"], DateTime.parse(self["datetime_created"]));
+            other["game__id"], DateTime.parse(other["game__datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -64,7 +66,7 @@ class Game extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         opponent_name TEXT NOT NULL,
@@ -86,21 +88,13 @@ class Game extends Base {
   static Future<List<Game>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
-        game.*,
-        league.datetime_created AS league__datetime_created,
-        league.name AS league__name,
-        league.team_name AS league__team_name,
-        league.sport AS league__sport,
-        league.captain AS league__captain,
-        league.games_won AS league__games_won,
-        league.games_lost AS league__games_lost,
-        league.games_played AS league__games_played
-      FROM game
-      INNER JOIN league ON game.league_id = league.id
+        $selectStatement,
+        ${League.selectStatement}
+      FROM $staticTableName
+      INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
       """);
-
     return List.generate(maps.length, (i) {
-      return Game.fromSelf(maps[i]);
+      return Game.create(maps[i]);
     });
   }
 }

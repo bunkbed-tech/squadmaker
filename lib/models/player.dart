@@ -3,9 +3,9 @@ import 'gender.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Player extends Base {
-  static const String _tableName = "player";
+  static const String staticTableName = "player";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   String name;
   String email;
@@ -18,6 +18,22 @@ class Player extends Base {
   int? scoreAllTime;
   double? scoreAvgPerGame;
   int? gamesAttended;
+
+  static const String selectStatement = """
+        player.id AS player__id,
+        player.datetime_created AS player__datetime_created,
+        player.name AS player__name,
+        player.gender_id AS player__gender_id,
+        player.pronouns AS player__pronouns,
+        player.phone AS player__phone,
+        player.email AS player__email,
+        player.birthday AS player__birthday,
+        player.place_from AS player__place_from,
+        player.photo AS player__photo,
+        player.score_all_time AS player__score_all_time,
+        player.score_avg_per_game AS player__score_avg_per_game,
+        player.games_attended AS player__games_attended
+        """;
 
   Player({
     int? id,
@@ -35,9 +51,9 @@ class Player extends Base {
     this.gamesAttended,
   }) : super(id, datetimeCreated);
 
-  Player.fromOther(Map<String, dynamic> other)
+  Player.create(Map<String, dynamic> other)
       : name = other["player__name"],
-        gender = Gender.fromOther(other),
+        gender = Gender.create(other),
         pronouns = other["player__pronouns"],
         phone = other["player__phone"],
         email = other["player__email"],
@@ -51,22 +67,6 @@ class Player extends Base {
         gamesAttended = other["player__games_attended"],
         super(other["player_id"],
             DateTime.parse(other["player__datetime_created"]));
-
-  Player.fromSelf(Map<String, dynamic> self)
-      : name = self["name"],
-        gender = Gender.fromOther(self),
-        pronouns = self["pronouns"],
-        phone = self["phone"],
-        email = self["email"],
-        birthday = self["birthday"] == "null"
-            ? null
-            : DateTime.parse(self["birthday"]),
-        placeFrom = self["place_from"],
-        photo = self["photo"],
-        scoreAllTime = self["score_all_time"],
-        scoreAvgPerGame = self["score_avg_per_game"],
-        gamesAttended = self["games_attended"],
-        super(self["id"], DateTime.parse(self["datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -88,7 +88,7 @@ class Player extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -114,15 +114,13 @@ class Player extends Base {
   static Future<List<Player>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
-        player.*,
-        gender.datetime_created AS gender__datetime_created,
-        gender.name AS gender__name
-      FROM player
-      INNER JOIN gender ON player.gender_id = gender.id
+        $selectStatement,
+        ${Gender.selectStatement}
+      FROM $staticTableName
+      INNER JOIN ${Gender.staticTableName} ON $staticTableName.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
       """);
-
     return List.generate(maps.length, (i) {
-      return Player.fromSelf(maps[i]);
+      return Player.create(maps[i]);
     });
   }
 }

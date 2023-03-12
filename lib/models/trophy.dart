@@ -1,16 +1,25 @@
 import 'base.dart' show Base;
 import 'player.dart' show Player;
+import 'gender.dart' show Gender;
 import 'enums.dart' show TrophyType;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Trophy extends Base {
-  static const String _tableName = "trophy";
+  static const String staticTableName = "trophy";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   Player player;
   TrophyType trophyType;
   DateTime dateAwarded;
+
+  static const String selectStatement = """
+        trophy.id AS trophy__id,
+        trophy.datetime_created AS trophy__datetime_created,
+        trophy.player_id AS trophy__player_id,
+        trophy.trophy_type AS trophy__trophy_type,
+        trophy.date_awarded AS trophy__date_awarded
+        """;
 
   Trophy(
       {int? id,
@@ -20,12 +29,13 @@ class Trophy extends Base {
       required this.dateAwarded})
       : super(id, datetimeCreated);
 
-  Trophy.fromSelf(Map<String, dynamic> another)
-      : player = Player.fromOther(another),
-        trophyType = TrophyType.values.firstWhere(
-            (e) => e.toString().split(".").last == another["trophy_type"]),
-        dateAwarded = DateTime.parse(another["date_awarded"]),
-        super(another["id"], DateTime.parse(another["datetime_created"]));
+  Trophy.create(Map<String, dynamic> another)
+      : player = Player.create(another),
+        trophyType = TrophyType.values.firstWhere((e) =>
+            e.toString().split(".").last == another["trophy__trophy_type"]),
+        dateAwarded = DateTime.parse(another["trophy__date_awarded"]),
+        super(another["trophy__id"],
+            DateTime.parse(another["trophy__datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -39,7 +49,7 @@ class Trophy extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         player_id INTEGER NOT NULL REFERENCES player (id),
@@ -57,27 +67,15 @@ class Trophy extends Base {
   static Future<List<Trophy>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
-        trophy.*,
-        player.datetime_created AS player__datetime_created,
-        player.name AS player__name,
-        player.gender_id AS player__gender_id,
-        player.pronouns AS player__pronouns,
-        player.phone AS player__phone,
-        player.email AS player__email,
-        player.birthday AS player__birthday,
-        player.place_from AS player__place_from,
-        player.photo AS player__photo,
-        player.score_all_time AS player__score_all_time,
-        player.score_avg_per_game AS player__score_avg_per_game,
-        player.games_attended AS player__games_attended,
-        gender.datetime_created AS gender__datetime_created,
-        gender.name AS gender__name
-      FROM trophy 
-      INNER JOIN player ON trophy.player_id = player.id
-      INNER JOIN gender ON player.gender_id = gender.id
+        $selectStatement,
+        ${Player.selectStatement},
+        ${Gender.selectStatement}
+      FROM $staticTableName 
+      INNER JOIN ${Player.staticTableName} ON $staticTableName .${Player.staticTableName}_id = ${Player.staticTableName}.id
+      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
       """);
     return List.generate(maps.length, (i) {
-      return Trophy.fromSelf(maps[i]);
+      return Trophy.create(maps[i]);
     });
   }
 }

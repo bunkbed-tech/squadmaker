@@ -1,18 +1,29 @@
 import 'base.dart' show Base;
 import 'game.dart' show Game;
 import 'player.dart' show Player;
+import 'gender.dart' show Gender;
+import 'league.dart' show League;
 import 'score_type.dart' show ScoreType;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Score extends Base {
-  static const String _tableName = "score";
+  static const String staticTableName = "score";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   Player player;
   Game game;
   DateTime timestamp;
   ScoreType scoreType;
+
+  static const String selectStatement = """
+        score.id AS score__id,
+        score.datetime_created AS score__datetime_created,
+        score.player_id AS score__player_id,
+        score.game_id AS score__game_id,
+        score.timestamp AS score__timestamp,
+        score.score_type_id AS score__score_type_id
+        """;
 
   Score({
     int? id,
@@ -23,12 +34,13 @@ class Score extends Base {
     required this.scoreType,
   }) : super(id, datetimeCreated);
 
-  Score.fromSelf(Map<String, dynamic> self)
-      : player = Player.fromOther(self),
-        game = Game.fromOther(self),
-        timestamp = DateTime.parse(self["timestamp"]),
-        scoreType = ScoreType.fromOther(self),
-        super(self["id"], DateTime.parse(self["datetime_created"]));
+  Score.create(Map<String, dynamic> self)
+      : player = Player.create(self),
+        game = Game.create(self),
+        timestamp = DateTime.parse(self["score__timestamp"]),
+        scoreType = ScoreType.create(self),
+        super(
+            self["score__id"], DateTime.parse(self["score__datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -43,7 +55,7 @@ class Score extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         player_id INTEGER NOT NULL REFERENCES player (id),
@@ -62,50 +74,21 @@ class Score extends Base {
   static Future<List<Score>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery("""
       SELECT
-        score.*,
-        player.datetime_created AS player__datetime_created,
-        player.name AS player__name,
-        player.gender_id AS player__gender_id,
-        player.pronouns AS player__pronouns,
-        player.phone AS player__phone,
-        player.email AS player__email,
-        player.birthday AS player__birthday,
-        player.place_from AS player__place_from,
-        player.photo AS player__photo,
-        player.score_all_time AS player__score_all_time,
-        player.score_avg_per_game AS player__score_avg_per_game,
-        player.games_attended AS player__games_attended,
-        game.datetime_created AS game__datetime_created,
-        game.opponent_name AS game__opponent_name,
-        game.location AS game__location,
-        game.start_datetime AS game__start_datetime,
-        game.league_id AS league_id,
-        game.your_score AS game__your_score,
-        game.opponent_score AS game__opponent_score,
-        game.group_photo AS game__group_photo,
-        gender.datetime_created AS gender__datetime_created,
-        gender.name AS gender__name,
-        league.datetime_created AS league__datetime_created,
-        league.name AS league__name,
-        league.team_name AS league__team_name,
-        league.sport AS league__sport,
-        league.captain AS league__captain,
-        league.games_won AS league__games_won,
-        league.games_lost AS league__games_lost,
-        league.games_played AS league__games_played,
-        score_type.datetime_created AS score_type__datetime_created,
-        score_type.value AS score_type__value,
-        score_type.sport AS score_type__sport,
-        score_type.name AS score_type__name
-      FROM score 
-      INNER JOIN player ON score.player_id = player.id
-      INNER JOIN game ON score.game_id = game.id
-      INNER JOIN gender ON player.gender_id = gender.id
-      INNER JOIN league ON game.league_id = league.id
-      INNER JOIN score_type ON score.score_type_id = score_type.id
+        $selectStatement,
+        ${Player.selectStatement},
+        ${Game.selectStatement},
+        ${Gender.selectStatement},
+        ${League.selectStatement},
+        ${ScoreType.selectStatement}
+      FROM $staticTableName 
+      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
+      INNER JOIN ${Game.staticTableName} ON $staticTableName.${Game.staticTableName}_id = ${Game.staticTableName}.id
+      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
+      INNER JOIN ${League.staticTableName} ON ${Game.staticTableName}.${League.staticTableName}_id = ${League.staticTableName}.id
+      INNER JOIN ${ScoreType.staticTableName} ON $staticTableName.${ScoreType.staticTableName}_id = ${ScoreType.staticTableName}.id
       """);
     return List.generate(maps.length, (i) {
-      return Score.fromSelf(maps[i]);
+      return Score.create(maps[i]);
     });
   }
 }

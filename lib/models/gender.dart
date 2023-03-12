@@ -2,11 +2,17 @@ import 'base.dart' show Base;
 import 'package:sqflite/sqflite.dart' show Database, Batch;
 
 class Gender extends Base {
-  static const String _tableName = "gender";
+  static const String staticTableName = "gender";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   String name;
+
+  static const String selectStatement = """
+        gender.id AS gender__id,
+        gender.datetime_created AS gender__datetime_created,
+        gender.name AS gender__name
+        """;
 
   Gender({
     int? id,
@@ -14,14 +20,10 @@ class Gender extends Base {
     required this.name,
   }) : super(id, datetimeCreated);
 
-  Gender.fromOther(Map<String, dynamic> other)
+  Gender.create(Map<String, dynamic> other)
       : name = other["gender__name"],
-        super(other["player__gender_id"],
+        super(other["gender__id"],
             DateTime.parse(other["gender__datetime_created"]));
-
-  Gender.fromSelf(Map<String, dynamic> self)
-      : name = self["name"],
-        super(self["id"], DateTime.parse(self["datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -33,7 +35,7 @@ class Gender extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         name TEXT UNIQUE
@@ -47,18 +49,22 @@ class Gender extends Base {
   }
 
   static Future<List<Gender>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query(_tableName);
+    final List<Map<String, dynamic>> maps = await db.rawQuery("""
+      SELECT
+        $selectStatement
+      FROM $staticTableName
+      """);
     return List.generate(maps.length, (i) {
-      return Gender.fromSelf(maps[i]);
+      return Gender.create(maps[i]);
     });
   }
 
   static Future<void> initialize(Database db) async {
     Batch batch = db.batch();
     String now = DateTime.now().toString();
-    batch.insert(_tableName, {'name': 'man', 'datetime_created': now});
-    batch.insert(_tableName, {'name': 'woman', 'datetime_created': now});
-    batch.insert(_tableName, {'name': 'other', 'datetime_created': now});
+    batch.insert(staticTableName, {'name': 'man', 'datetime_created': now});
+    batch.insert(staticTableName, {'name': 'woman', 'datetime_created': now});
+    batch.insert(staticTableName, {'name': 'other', 'datetime_created': now});
     await batch.commit();
   }
 }

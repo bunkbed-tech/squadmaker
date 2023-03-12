@@ -2,9 +2,9 @@ import 'base.dart' show Base;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class League extends Base {
-  static const String _tableName = "league";
+  static const String staticTableName = "league";
   @override
-  String get tableName => _tableName;
+  String get tableName => staticTableName;
 
   String name;
   String teamName;
@@ -13,6 +13,18 @@ class League extends Base {
   int? gamesWon;
   int? gamesLost;
   int? gamesPlayed;
+
+  static const String selectStatement = """
+    league.id AS league__id,
+    league.datetime_created AS league__datetime_created,
+    league.name AS league__name,
+    league.team_name AS league__team_name,
+    league.sport AS league__sport,
+    league.captain AS league__captain,
+    league.games_won AS league__games_won,
+    league.games_lost AS league__games_lost,
+    league.games_played AS league__games_played
+  """;
 
   League({
     int? id,
@@ -26,7 +38,7 @@ class League extends Base {
     this.gamesPlayed,
   }) : super(id, datetimeCreated);
 
-  League.fromOther(Map<String, dynamic> other)
+  League.create(Map<String, dynamic> other)
       : name = other["league__name"],
         teamName = other["league__team_name"],
         sport = other["league__sport"],
@@ -36,16 +48,6 @@ class League extends Base {
         gamesPlayed = other["league__games_played"],
         super(other["league_id"],
             DateTime.parse(other["league__datetime_created"]));
-
-  League.fromSelf(Map<String, dynamic> self)
-      : name = self["name"],
-        teamName = self["team_name"],
-        sport = self["sport"],
-        captain = self["captain"],
-        gamesWon = self["games_won"],
-        gamesLost = self["games_lost"],
-        gamesPlayed = self["games_played"],
-        super(self["id"], DateTime.parse(self["datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -63,7 +65,7 @@ class League extends Base {
 
   static String createSQLTable() {
     return """
-      CREATE TABLE $_tableName (
+      CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -83,9 +85,13 @@ class League extends Base {
   }
 
   static Future<List<League>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query(_tableName);
+    final List<Map<String, dynamic>> maps = await db.rawQuery("""
+      SELECT
+        $selectStatement
+      FROM $staticTableName
+      """);
     return List.generate(maps.length, (i) {
-      return League.fromSelf(maps[i]);
+      return League.create(maps[i]);
     });
   }
 }
