@@ -26,6 +26,19 @@ class User extends Base {
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.id as ${prefix}id
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        datetime_created TEXT NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        username TEXT,
+        password_hash TEXT,
+        export_dir TEXT,
+        theme TEXT,
+        avatar TEXT
+      );
+  """;
 
   User({
     int? id,
@@ -62,22 +75,6 @@ class User extends Base {
       "avatar": avatar,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        datetime_created TEXT NOT NULL,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        username TEXT,
-        password_hash TEXT,
-        export_dir TEXT,
-        theme TEXT,
-        avatar TEXT
-      );
-    """;
   }
 
   @override

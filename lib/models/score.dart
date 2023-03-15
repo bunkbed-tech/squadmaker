@@ -25,6 +25,16 @@ class Score extends Base {
         ${staticTableName}.timestamp AS ${prefix}timestamp,
         ${staticTableName}.score_type_id AS ${prefix}score_type_id
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        player_id INTEGER NOT NULL REFERENCES player (id),
+        game_id INTEGER NOT NULL REFERENCES game (id),
+        timestamp TEXT NOT NULL,
+        score_type_id INTEGER NOT NULL REFERENCES score_type (id)
+      );
+  """;
 
   Score({
     int? id,
@@ -52,19 +62,6 @@ class Score extends Base {
       "score_type_id": scoreType.id,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        player_id INTEGER NOT NULL REFERENCES player (id),
-        game_id INTEGER NOT NULL REFERENCES game (id),
-        timestamp TEXT NOT NULL,
-        score_type_id INTEGER NOT NULL REFERENCES score_type (id)
-      );
-    """;
   }
 
   @override

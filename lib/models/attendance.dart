@@ -22,6 +22,15 @@ class Attendance extends Base {
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        datetime_created TEXT NOT NULL,
+        player_id INTEGER NOT NULL REFERENCES player (id),
+        game_id INTEGER NOT NULL REFERENCES game (id),
+        attended INTEGER NOT NULL
+      );
+  """;
 
   Attendance({
     int? id,
@@ -46,18 +55,6 @@ class Attendance extends Base {
       "attended": attended ? 1 : 0,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        datetime_created TEXT NOT NULL,
-        player_id INTEGER NOT NULL REFERENCES player (id),
-        game_id INTEGER NOT NULL REFERENCES game (id),
-        attended INTEGER NOT NULL
-      );
-    """;
   }
 
   @override

@@ -27,6 +27,19 @@ class Game extends Base {
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.id AS ${prefix}id
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        opponent_name TEXT NOT NULL,
+        location TEXT NOT NULL,
+        start_datetime TEXT NOT NULL,
+        league_id INTEGER NOT NULL REFERENCES league (id),
+        your_score INTEGER NOT NULL DEFAULT (0),
+        opponent_score INTEGER NOT NULL DEFAULT (0),
+        group_photo TEXT
+      );
+  """;
 
   Game({
     int? id,
@@ -63,22 +76,6 @@ class Game extends Base {
       "group_photo": groupPhoto,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        opponent_name TEXT NOT NULL,
-        location TEXT NOT NULL,
-        start_datetime TEXT NOT NULL,
-        league_id INTEGER NOT NULL REFERENCES league (id),
-        your_score INTEGER NOT NULL DEFAULT (0),
-        opponent_score INTEGER NOT NULL DEFAULT (0),
-        group_photo TEXT
-      );
-    """;
   }
 
   @override

@@ -14,6 +14,13 @@ class Gender extends Base {
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.name AS ${prefix}name
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        name TEXT UNIQUE
+      );
+  """;
 
   Gender({
     int? id,
@@ -32,16 +39,6 @@ class Gender extends Base {
       "name": name,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        name TEXT UNIQUE
-      );
-    """;
   }
 
   @override

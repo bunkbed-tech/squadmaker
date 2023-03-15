@@ -21,6 +21,15 @@ class Payment extends Base {
     ${staticTableName}.league_id AS ${prefix}league_id,
     ${staticTableName}.paid AS ${prefix}paid
   """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        player_id INTEGER NOT NULL REFERENCES player (id),
+        league_id INTEGER NOT NULL REFERENCES league (id),
+        paid INTEGER
+      );
+  """;
 
   Payment({
     int? id,
@@ -45,18 +54,6 @@ class Payment extends Base {
       "paid": paid ? 1 : 0,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        player_id INTEGER NOT NULL REFERENCES player (id),
-        league_id INTEGER NOT NULL REFERENCES league (id),
-        paid INTEGER
-      );
-    """;
   }
 
   @override

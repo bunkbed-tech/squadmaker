@@ -19,6 +19,15 @@ class ScoreType extends Base {
         ${staticTableName}.sport AS ${prefix}sport,
         ${staticTableName}.value AS ${prefix}value
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        value INTEGER,
+        sport TEXT NOT NULL,
+        name TEXT NOT NULL
+      );
+  """;
 
   ScoreType({
     int? id,
@@ -36,18 +45,6 @@ class ScoreType extends Base {
             (e) => e.toString().split(".").last == other["${prefix}name"]),
         super(other["${prefix}id"],
             DateTime.parse(other["${prefix}datetime_created"]));
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        value INTEGER,
-        sport TEXT NOT NULL,
-        name TEXT NOT NULL
-      );
-    """;
-  }
 
   @override
   Map<String, dynamic> toMap() {

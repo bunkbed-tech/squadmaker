@@ -21,6 +21,15 @@ class Trophy extends Base {
         ${staticTableName}.trophy_type AS ${prefix}trophy_type,
         ${staticTableName}.date_awarded AS ${prefix}date_awarded
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        player_id INTEGER NOT NULL REFERENCES player (id),
+        trophy_type TEXT NOT NULL,
+        date_awarded TEXT NOT NULL
+      );
+  """;
 
   Trophy(
       {int? id,
@@ -46,18 +55,6 @@ class Trophy extends Base {
       "date_awarded": dateAwarded.toString(),
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        player_id INTEGER NOT NULL REFERENCES player (id),
-        trophy_type TEXT NOT NULL,
-        date_awarded TEXT NOT NULL
-      );
-    """;
   }
 
   @override

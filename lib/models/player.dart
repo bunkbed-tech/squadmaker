@@ -35,6 +35,23 @@ class Player extends Base {
         ${staticTableName}.score_avg_per_game AS ${prefix}score_avg_per_game,
         ${staticTableName}.games_attended AS ${prefix}games_attended
         """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        name TEXT NOT NULL,
+        gender_id INTEGER NOT NULL REFERENCES gender (id),
+        pronouns TEXT,
+        birthday TEXT,
+        phone TEXT NOT NULL,
+        email TEXT NOT NULL,
+        place_from TEXT,
+        photo TEXT,
+        score_all_time INTEGER NOT NULL DEFAULT (0),
+        score_avg_per_game REAL,
+        games_attended INTEGER NOT NULL DEFAULT (0)
+      );
+  """;
 
   Player({
     int? id,
@@ -85,26 +102,6 @@ class Player extends Base {
       "games_attended": gamesAttended,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        name TEXT NOT NULL,
-        gender_id INTEGER NOT NULL REFERENCES gender (id),
-        pronouns TEXT,
-        birthday TEXT,
-        phone TEXT NOT NULL,
-        email TEXT NOT NULL,
-        place_from TEXT,
-        photo TEXT,
-        score_all_time INTEGER NOT NULL DEFAULT (0),
-        score_avg_per_game REAL,
-        games_attended INTEGER NOT NULL DEFAULT (0)
-      );
-    """;
   }
 
   @override

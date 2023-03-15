@@ -40,16 +40,16 @@ void main() async {
   var database = await openDatabase(
     join(appDocPath, "squadmaker.db"),
     onCreate: (db, version) async {
-      await db.execute(Gender.createSQLTable());
-      await db.execute(Player.createSQLTable());
-      await db.execute(League.createSQLTable());
-      await db.execute(User.createSQLTable());
-      await db.execute(Attendance.createSQLTable());
-      await db.execute(Game.createSQLTable());
-      await db.execute(Payment.createSQLTable());
-      await db.execute(ScoreType.createSQLTable());
-      await db.execute(Score.createSQLTable());
-      await db.execute(Trophy.createSQLTable());
+      await db.execute(Gender.createStatement);
+      await db.execute(Player.createStatement);
+      await db.execute(League.createStatement);
+      await db.execute(User.createStatement);
+      await db.execute(Attendance.createStatement);
+      await db.execute(Game.createStatement);
+      await db.execute(Payment.createStatement);
+      await db.execute(ScoreType.createStatement);
+      await db.execute(Score.createStatement);
+      await db.execute(Trophy.createStatement);
       await Gender.initialize(db);
     },
     version: 1,

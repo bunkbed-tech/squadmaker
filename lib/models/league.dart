@@ -26,6 +26,19 @@ class League extends Base {
     ${staticTableName}.games_lost AS ${prefix}games_lost,
     ${staticTableName}.games_played AS ${prefix}games_played
   """;
+  static String createStatement = """
+      CREATE TABLE $staticTableName (
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+        datetime_created TEXT NOT NULL,
+        name TEXT NOT NULL,
+        team_name TEXT NOT NULL,
+        sport TEXT NOT NULL,
+        captain TEXT NOT NULL,
+        games_won INTEGER NOT NULL DEFAULT (0),
+        games_lost INTEGER NOT NULL DEFAULT (0),
+        games_played INTEGER NOT NULL DEFAULT (0)
+      );
+  """;
 
   League({
     int? id,
@@ -62,22 +75,6 @@ class League extends Base {
       "games_played": gamesPlayed,
       "datetime_created": super.toMap()["datetime_created"],
     };
-  }
-
-  static String createSQLTable() {
-    return """
-      CREATE TABLE $staticTableName (
-        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-        datetime_created TEXT NOT NULL,
-        name TEXT NOT NULL,
-        team_name TEXT NOT NULL,
-        sport TEXT NOT NULL,
-        captain TEXT NOT NULL,
-        games_won INTEGER NOT NULL DEFAULT (0),
-        games_lost INTEGER NOT NULL DEFAULT (0),
-        games_played INTEGER NOT NULL DEFAULT (0)
-      );
-    """;
   }
 
   @override
