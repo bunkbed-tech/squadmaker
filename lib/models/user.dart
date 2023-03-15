@@ -16,15 +16,15 @@ class User extends Base {
   String? avatar;
 
   static String selectStatement = """
-        user.name AS ${prefix}name,
-        user.email AS ${prefix}email,
-        user.username AS ${prefix}username,
-        user.password_hash AS ${prefix}password_hash,
-        user.export_dir AS ${prefix}export_dir,
-        user.theme AS ${prefix}theme,
-        user.avatar AS ${prefix}avatar,
-        user.datetime_created AS ${prefix}datetime_created,
-        user.id as ${prefix}id
+        ${staticTableName}.name AS ${prefix}name,
+        ${staticTableName}.email AS ${prefix}email,
+        ${staticTableName}.username AS ${prefix}username,
+        ${staticTableName}.password_hash AS ${prefix}password_hash,
+        ${staticTableName}.export_dir AS ${prefix}export_dir,
+        ${staticTableName}.theme AS ${prefix}theme,
+        ${staticTableName}.avatar AS ${prefix}avatar,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.id as ${prefix}id
         """;
 
   User({
@@ -47,7 +47,8 @@ class User extends Base {
         exportDir = self["${prefix}export_dir"],
         theme = self["${prefix}theme"],
         avatar = self["${prefix}avatar"],
-        super(self["${prefix}id"], DateTime.parse(self["${prefix}datetime_created"]));
+        super(self["${prefix}id"],
+            DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

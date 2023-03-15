@@ -10,9 +10,9 @@ class Gender extends Base {
   String name;
 
   static String selectStatement = """
-        gender.id AS ${prefix}id,
-        gender.datetime_created AS ${prefix}datetime_created,
-        gender.name AS ${prefix}name
+        ${staticTableName}.id AS ${prefix}id,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.name AS ${prefix}name
         """;
 
   Gender({

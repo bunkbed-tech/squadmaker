@@ -16,15 +16,15 @@ class League extends Base {
   int? gamesPlayed;
 
   static String selectStatement = """
-    league.id AS ${prefix}id,
-    league.datetime_created AS ${prefix}datetime_created,
-    league.name AS ${prefix}name,
-    league.team_name AS ${prefix}team_name,
-    league.sport AS ${prefix}sport,
-    league.captain AS ${prefix}captain,
-    league.games_won AS ${prefix}games_won,
-    league.games_lost AS ${prefix}games_lost,
-    league.games_played AS ${prefix}games_played
+    ${staticTableName}.id AS ${prefix}id,
+    ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+    ${staticTableName}.name AS ${prefix}name,
+    ${staticTableName}.team_name AS ${prefix}team_name,
+    ${staticTableName}.sport AS ${prefix}sport,
+    ${staticTableName}.captain AS ${prefix}captain,
+    ${staticTableName}.games_won AS ${prefix}games_won,
+    ${staticTableName}.games_lost AS ${prefix}games_lost,
+    ${staticTableName}.games_played AS ${prefix}games_played
   """;
 
   League({

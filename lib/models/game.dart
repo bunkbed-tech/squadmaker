@@ -17,15 +17,15 @@ class Game extends Base {
   String? groupPhoto;
 
   static String selectStatement = """
-        game.opponent_name AS ${prefix}opponent_name,
-        game.location AS ${prefix}location,
-        game.start_datetime AS ${prefix}start_datetime,
-        game.league_id AS ${prefix}league_id,
-        game.your_score AS ${prefix}your_score,
-        game.opponent_score AS ${prefix}opponent_score,
-        game.group_photo AS ${prefix}group_photo,
-        game.datetime_created AS ${prefix}datetime_created,
-        game.id AS ${prefix}id
+        ${staticTableName}.opponent_name AS ${prefix}opponent_name,
+        ${staticTableName}.location AS ${prefix}location,
+        ${staticTableName}.start_datetime AS ${prefix}start_datetime,
+        ${staticTableName}.league_id AS ${prefix}league_id,
+        ${staticTableName}.your_score AS ${prefix}your_score,
+        ${staticTableName}.opponent_score AS ${prefix}opponent_score,
+        ${staticTableName}.group_photo AS ${prefix}group_photo,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.id AS ${prefix}id
         """;
 
   Game({
@@ -48,8 +48,8 @@ class Game extends Base {
         yourScore = other["${prefix}your_score"],
         opponentScore = other["${prefix}opponent_score"],
         groupPhoto = other["${prefix}group_photo"],
-        super(
-            other["${prefix}id"], DateTime.parse(other["${prefix}datetime_created"]));
+        super(other["${prefix}id"],
+            DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

@@ -13,11 +13,11 @@ class ScoreType extends Base {
   ScoreNames name; // currently using enum
 
   static String selectStatement = """
-        score_type.id AS ${prefix}id,
-        score_type.datetime_created AS ${prefix}datetime_created,
-        score_type.name AS ${prefix}name,
-        score_type.sport AS ${prefix}sport,
-        score_type.value AS ${prefix}value
+        ${staticTableName}.id AS ${prefix}id,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.name AS ${prefix}name,
+        ${staticTableName}.sport AS ${prefix}sport,
+        ${staticTableName}.value AS ${prefix}value
         """;
 
   ScoreType({

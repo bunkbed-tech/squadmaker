@@ -21,19 +21,19 @@ class Player extends Base {
   int? gamesAttended;
 
   static String selectStatement = """
-        player.id AS ${prefix}id,
-        player.datetime_created AS ${prefix}datetime_created,
-        player.name AS ${prefix}name,
-        player.gender_id AS ${prefix}gender_id,
-        player.pronouns AS ${prefix}pronouns,
-        player.phone AS ${prefix}phone,
-        player.email AS ${prefix}email,
-        player.birthday AS ${prefix}birthday,
-        player.place_from AS ${prefix}place_from,
-        player.photo AS ${prefix}photo,
-        player.score_all_time AS ${prefix}score_all_time,
-        player.score_avg_per_game AS ${prefix}score_avg_per_game,
-        player.games_attended AS ${prefix}games_attended
+        ${staticTableName}.id AS ${prefix}id,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.name AS ${prefix}name,
+        ${staticTableName}.gender_id AS ${prefix}gender_id,
+        ${staticTableName}.pronouns AS ${prefix}pronouns,
+        ${staticTableName}.phone AS ${prefix}phone,
+        ${staticTableName}.email AS ${prefix}email,
+        ${staticTableName}.birthday AS ${prefix}birthday,
+        ${staticTableName}.place_from AS ${prefix}place_from,
+        ${staticTableName}.photo AS ${prefix}photo,
+        ${staticTableName}.score_all_time AS ${prefix}score_all_time,
+        ${staticTableName}.score_avg_per_game AS ${prefix}score_avg_per_game,
+        ${staticTableName}.games_attended AS ${prefix}games_attended
         """;
 
   Player({

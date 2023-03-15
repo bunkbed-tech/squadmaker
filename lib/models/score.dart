@@ -18,12 +18,12 @@ class Score extends Base {
   ScoreType scoreType;
 
   static String selectStatement = """
-        score.id AS ${prefix}id,
-        score.datetime_created AS ${prefix}datetime_created,
-        score.player_id AS ${prefix}player_id,
-        score.game_id AS ${prefix}game_id,
-        score.timestamp AS ${prefix}timestamp,
-        score.score_type_id AS ${prefix}score_type_id
+        ${staticTableName}.id AS ${prefix}id,
+        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
+        ${staticTableName}.player_id AS ${prefix}player_id,
+        ${staticTableName}.game_id AS ${prefix}game_id,
+        ${staticTableName}.timestamp AS ${prefix}timestamp,
+        ${staticTableName}.score_type_id AS ${prefix}score_type_id
         """;
 
   Score({
@@ -40,8 +40,8 @@ class Score extends Base {
         game = Game.create(self),
         timestamp = DateTime.parse(self["${prefix}timestamp"]),
         scoreType = ScoreType.create(self),
-        super(
-            self["${prefix}id"], DateTime.parse(self["${prefix}datetime_created"]));
+        super(self["${prefix}id"],
+            DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
