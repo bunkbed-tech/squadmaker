@@ -1,4 +1,5 @@
 import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/enums.dart' show AppTheme;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class User extends Base {
@@ -12,7 +13,7 @@ class User extends Base {
   String? username;
   String? passwordHash;
   String? exportDir;
-  String? theme; // should be an AppTheme (enum)
+  AppTheme? theme;
   String? avatar;
 
   static String selectRows = """
@@ -40,7 +41,7 @@ class User extends Base {
         username TEXT,
         password_hash TEXT,
         export_dir TEXT,
-        theme TEXT,
+        theme TEXT NOT NULL DEFAULT ('light'),
         avatar TEXT
       );
   """;
@@ -63,7 +64,8 @@ class User extends Base {
         username = map["${prefix}username"],
         passwordHash = map["${prefix}password_hash"],
         exportDir = map["${prefix}export_dir"],
-        theme = map["${prefix}theme"],
+        theme = AppTheme.values.firstWhere(
+            (e) => e.toString().split(".").last == map["${prefix}theme"]),
         avatar = map["${prefix}avatar"],
         super(map["${prefix}id"],
             DateTime.parse(map["${prefix}datetime_created"]));
@@ -76,7 +78,7 @@ class User extends Base {
       "username": username,
       "password_hash": passwordHash,
       "export_dir": exportDir,
-      "theme": theme,
+      "theme": theme?.name,
       "avatar": avatar,
       "datetime_created": super.toMap()["datetime_created"],
     };
