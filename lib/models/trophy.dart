@@ -14,13 +14,22 @@ class Trophy extends Base {
   TrophyType trophyType;
   DateTime dateAwarded;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.player_id AS ${prefix}player_id,
         ${staticTableName}.trophy_type AS ${prefix}trophy_type,
         ${staticTableName}.date_awarded AS ${prefix}date_awarded
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows,
+        ${Player.selectRows},
+        ${Gender.selectRows}
+      FROM $staticTableName 
+      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
+      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -63,17 +72,7 @@ class Trophy extends Base {
   }
 
   static Future<List<Trophy>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement,
-        ${Player.selectStatement},
-        ${Gender.selectStatement}
-      FROM $staticTableName 
-      INNER JOIN ${Player.staticTableName} ON $staticTableName .${Player.staticTableName}_id = ${Player.staticTableName}.id
-      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
-      """);
-    return List.generate(maps.length, (i) {
-      return Trophy.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Trophy.create(maps[i]));
   }
 }

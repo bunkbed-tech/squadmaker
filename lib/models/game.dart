@@ -16,7 +16,7 @@ class Game extends Base {
   int? opponentScore;
   String? groupPhoto;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.opponent_name AS ${prefix}opponent_name,
         ${staticTableName}.location AS ${prefix}location,
         ${staticTableName}.start_datetime AS ${prefix}start_datetime,
@@ -26,7 +26,14 @@ class Game extends Base {
         ${staticTableName}.group_photo AS ${prefix}group_photo,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.id AS ${prefix}id
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows,
+        ${League.selectRows}
+      FROM $staticTableName
+      INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -84,15 +91,7 @@ class Game extends Base {
   }
 
   static Future<List<Game>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement,
-        ${League.selectStatement}
-      FROM $staticTableName
-      INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
-      """);
-    return List.generate(maps.length, (i) {
-      return Game.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Game.create(maps[i]));
   }
 }

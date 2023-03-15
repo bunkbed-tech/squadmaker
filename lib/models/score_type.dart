@@ -12,13 +12,18 @@ class ScoreType extends Base {
   Sport sport; // currently using an enum
   ScoreNames name; // currently using enum
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.name AS ${prefix}name,
         ${staticTableName}.sport AS ${prefix}sport,
         ${staticTableName}.value AS ${prefix}value
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows
+      FROM $staticTableName
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -62,13 +67,7 @@ class ScoreType extends Base {
   }
 
   static Future<List<ScoreType>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement
-      FROM $staticTableName
-      """);
-    return List.generate(maps.length, (i) {
-      return ScoreType.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => ScoreType.create(maps[i]));
   }
 }

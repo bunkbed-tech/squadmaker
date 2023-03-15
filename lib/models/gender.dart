@@ -9,11 +9,16 @@ class Gender extends Base {
 
   String name;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.name AS ${prefix}name
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows
+      FROM $staticTableName
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -47,14 +52,8 @@ class Gender extends Base {
   }
 
   static Future<List<Gender>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement
-      FROM $staticTableName
-      """);
-    return List.generate(maps.length, (i) {
-      return Gender.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Gender.create(maps[i]));
   }
 
   static Future<void> initialize(Database db) async {

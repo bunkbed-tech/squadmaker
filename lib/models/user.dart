@@ -15,7 +15,7 @@ class User extends Base {
   String? theme; // should be an AppTheme (enum)
   String? avatar;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.name AS ${prefix}name,
         ${staticTableName}.email AS ${prefix}email,
         ${staticTableName}.username AS ${prefix}username,
@@ -25,7 +25,12 @@ class User extends Base {
         ${staticTableName}.avatar AS ${prefix}avatar,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.id as ${prefix}id
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows
+      FROM $staticTableName
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -83,13 +88,7 @@ class User extends Base {
   }
 
   static Future<List<User>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement
-      FROM $staticTableName
-      """);
-    return List.generate(maps.length, (i) {
-      return User.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => User.create(maps[i]));
   }
 }

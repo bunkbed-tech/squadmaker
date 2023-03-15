@@ -15,7 +15,7 @@ class League extends Base {
   int? gamesLost;
   int? gamesPlayed;
 
-  static String selectStatement = """
+  static String selectRows = """
     ${staticTableName}.id AS ${prefix}id,
     ${staticTableName}.datetime_created AS ${prefix}datetime_created,
     ${staticTableName}.name AS ${prefix}name,
@@ -25,6 +25,11 @@ class League extends Base {
     ${staticTableName}.games_won AS ${prefix}games_won,
     ${staticTableName}.games_lost AS ${prefix}games_lost,
     ${staticTableName}.games_played AS ${prefix}games_played
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows
+      FROM $staticTableName
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
@@ -83,13 +88,7 @@ class League extends Base {
   }
 
   static Future<List<League>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement
-      FROM $staticTableName
-      """);
-    return List.generate(maps.length, (i) {
-      return League.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => League.create(maps[i]));
   }
 }

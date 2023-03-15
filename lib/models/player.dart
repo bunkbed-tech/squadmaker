@@ -20,7 +20,7 @@ class Player extends Base {
   double? scoreAvgPerGame;
   int? gamesAttended;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.name AS ${prefix}name,
@@ -34,7 +34,14 @@ class Player extends Base {
         ${staticTableName}.score_all_time AS ${prefix}score_all_time,
         ${staticTableName}.score_avg_per_game AS ${prefix}score_avg_per_game,
         ${staticTableName}.games_attended AS ${prefix}games_attended
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows,
+        ${Gender.selectRows}
+      FROM $staticTableName
+      INNER JOIN ${Gender.staticTableName} ON $staticTableName.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -110,15 +117,7 @@ class Player extends Base {
   }
 
   static Future<List<Player>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement,
-        ${Gender.selectStatement}
-      FROM $staticTableName
-      INNER JOIN ${Gender.staticTableName} ON $staticTableName.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
-      """);
-    return List.generate(maps.length, (i) {
-      return Player.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Player.create(maps[i]));
   }
 }

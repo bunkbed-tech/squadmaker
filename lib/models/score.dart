@@ -17,14 +17,29 @@ class Score extends Base {
   DateTime timestamp;
   ScoreType scoreType;
 
-  static String selectStatement = """
+  static String selectRows = """
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.player_id AS ${prefix}player_id,
         ${staticTableName}.game_id AS ${prefix}game_id,
         ${staticTableName}.timestamp AS ${prefix}timestamp,
         ${staticTableName}.score_type_id AS ${prefix}score_type_id
-        """;
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows,
+        ${Player.selectRows},
+        ${Game.selectRows},
+        ${Gender.selectRows},
+        ${League.selectRows},
+        ${ScoreType.selectRows}
+      FROM $staticTableName 
+      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
+      INNER JOIN ${Game.staticTableName} ON $staticTableName.${Game.staticTableName}_id = ${Game.staticTableName}.id
+      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
+      INNER JOIN ${League.staticTableName} ON ${Game.staticTableName}.${League.staticTableName}_id = ${League.staticTableName}.id
+      INNER JOIN ${ScoreType.staticTableName} ON $staticTableName.${ScoreType.staticTableName}_id = ${ScoreType.staticTableName}.id
+  """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -70,23 +85,7 @@ class Score extends Base {
   }
 
   static Future<List<Score>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement,
-        ${Player.selectStatement},
-        ${Game.selectStatement},
-        ${Gender.selectStatement},
-        ${League.selectStatement},
-        ${ScoreType.selectStatement}
-      FROM $staticTableName 
-      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
-      INNER JOIN ${Game.staticTableName} ON $staticTableName.${Game.staticTableName}_id = ${Game.staticTableName}.id
-      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
-      INNER JOIN ${League.staticTableName} ON ${Game.staticTableName}.${League.staticTableName}_id = ${League.staticTableName}.id
-      INNER JOIN ${ScoreType.staticTableName} ON $staticTableName.${ScoreType.staticTableName}_id = ${ScoreType.staticTableName}.id
-      """);
-    return List.generate(maps.length, (i) {
-      return Score.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Score.create(maps[i]));
   }
 }

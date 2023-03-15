@@ -14,12 +14,23 @@ class Payment extends Base {
   League league;
   bool paid;
 
-  static String selectStatement = """
+  static String selectRows = """
     ${staticTableName}.id AS ${prefix}id,
     ${staticTableName}.datetime_created AS ${prefix}datetime_created,
     ${staticTableName}.player_id AS ${prefix}player_id,
     ${staticTableName}.league_id AS ${prefix}league_id,
     ${staticTableName}.paid AS ${prefix}paid
+  """;
+  static String selectStatement = """
+      SELECT
+        $selectRows,
+        ${Player.selectRows},
+        ${Gender.selectRows},
+        ${League.selectRows}
+      FROM $staticTableName
+      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
+      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
+      INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
@@ -62,19 +73,7 @@ class Payment extends Base {
   }
 
   static Future<List<Payment>> list(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery("""
-      SELECT
-        $selectStatement,
-        ${Player.selectStatement},
-        ${Gender.selectStatement},
-        ${League.selectStatement}
-      FROM $staticTableName
-      INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
-      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
-      INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
-      """);
-    return List.generate(maps.length, (i) {
-      return Payment.create(maps[i]);
-    });
+    final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
+    return List.generate(maps.length, (i) => Payment.create(maps[i]));
   }
 }
