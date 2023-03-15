@@ -18,15 +18,15 @@ class Game extends Base {
   String? groupPhoto;
 
   static String selectRows = """
-        ${staticTableName}.opponent_name AS ${prefix}opponent_name,
-        ${staticTableName}.location AS ${prefix}location,
-        ${staticTableName}.start_datetime AS ${prefix}start_datetime,
-        ${staticTableName}.league_id AS ${prefix}league_id,
-        ${staticTableName}.your_score AS ${prefix}your_score,
-        ${staticTableName}.opponent_score AS ${prefix}opponent_score,
-        ${staticTableName}.group_photo AS ${prefix}group_photo,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-        ${staticTableName}.id AS ${prefix}id
+        $staticTableName.opponent_name AS ${prefix}opponent_name,
+        $staticTableName.location AS ${prefix}location,
+        $staticTableName.start_datetime AS ${prefix}start_datetime,
+        $staticTableName.league_id AS ${prefix}league_id,
+        $staticTableName.your_score AS ${prefix}your_score,
+        $staticTableName.opponent_score AS ${prefix}opponent_score,
+        $staticTableName.group_photo AS ${prefix}group_photo,
+        $staticTableName.datetime_created AS ${prefix}datetime_created,
+        $staticTableName.id AS ${prefix}id
   """;
   static String selectStatement = """
       SELECT

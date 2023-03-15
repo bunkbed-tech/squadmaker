@@ -15,11 +15,11 @@ class Payment extends Base {
   bool paid;
 
   static String selectRows = """
-    ${staticTableName}.id AS ${prefix}id,
-    ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-    ${staticTableName}.player_id AS ${prefix}player_id,
-    ${staticTableName}.league_id AS ${prefix}league_id,
-    ${staticTableName}.paid AS ${prefix}paid
+    $staticTableName.id AS ${prefix}id,
+    $staticTableName.datetime_created AS ${prefix}datetime_created,
+    $staticTableName.player_id AS ${prefix}player_id,
+    $staticTableName.league_id AS ${prefix}league_id,
+    $staticTableName.paid AS ${prefix}paid
   """;
   static String selectStatement = """
       SELECT

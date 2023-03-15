@@ -21,19 +21,19 @@ class Player extends Base {
   int? gamesAttended;
 
   static String selectRows = """
-        ${staticTableName}.id AS ${prefix}id,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-        ${staticTableName}.name AS ${prefix}name,
-        ${staticTableName}.gender AS ${prefix}gender,
-        ${staticTableName}.pronouns AS ${prefix}pronouns,
-        ${staticTableName}.phone AS ${prefix}phone,
-        ${staticTableName}.email AS ${prefix}email,
-        ${staticTableName}.birthday AS ${prefix}birthday,
-        ${staticTableName}.place_from AS ${prefix}place_from,
-        ${staticTableName}.photo AS ${prefix}photo,
-        ${staticTableName}.score_all_time AS ${prefix}score_all_time,
-        ${staticTableName}.score_avg_per_game AS ${prefix}score_avg_per_game,
-        ${staticTableName}.games_attended AS ${prefix}games_attended
+        $staticTableName.id AS ${prefix}id,
+        $staticTableName.datetime_created AS ${prefix}datetime_created,
+        $staticTableName.name AS ${prefix}name,
+        $staticTableName.gender AS ${prefix}gender,
+        $staticTableName.pronouns AS ${prefix}pronouns,
+        $staticTableName.phone AS ${prefix}phone,
+        $staticTableName.email AS ${prefix}email,
+        $staticTableName.birthday AS ${prefix}birthday,
+        $staticTableName.place_from AS ${prefix}place_from,
+        $staticTableName.photo AS ${prefix}photo,
+        $staticTableName.score_all_time AS ${prefix}score_all_time,
+        $staticTableName.score_avg_per_game AS ${prefix}score_avg_per_game,
+        $staticTableName.games_attended AS ${prefix}games_attended
   """;
   static String selectStatement = """
       SELECT

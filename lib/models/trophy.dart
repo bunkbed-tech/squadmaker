@@ -14,11 +14,11 @@ class Trophy extends Base {
   DateTime dateAwarded;
 
   static String selectRows = """
-        ${staticTableName}.id AS ${prefix}id,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-        ${staticTableName}.player_id AS ${prefix}player_id,
-        ${staticTableName}.trophy_type AS ${prefix}trophy_type,
-        ${staticTableName}.date_awarded AS ${prefix}date_awarded
+        $staticTableName.id AS ${prefix}id,
+        $staticTableName.datetime_created AS ${prefix}datetime_created,
+        $staticTableName.player_id AS ${prefix}player_id,
+        $staticTableName.trophy_type AS ${prefix}trophy_type,
+        $staticTableName.date_awarded AS ${prefix}date_awarded
   """;
   static String selectStatement = """
       SELECT

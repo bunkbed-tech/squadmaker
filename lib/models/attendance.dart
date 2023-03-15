@@ -16,11 +16,11 @@ class Attendance extends Base {
   bool attended;
 
   static String selectRows = """
-        ${staticTableName}.player_id AS ${prefix}player_id,
-        ${staticTableName}.game_id AS ${prefix}game_id,
-        ${staticTableName}.attended AS ${prefix}attended,
-        ${staticTableName}.id AS ${prefix}id,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created
+        $staticTableName.player_id AS ${prefix}player_id,
+        $staticTableName.game_id AS ${prefix}game_id,
+        $staticTableName.attended AS ${prefix}attended,
+        $staticTableName.id AS ${prefix}id,
+        $staticTableName.datetime_created AS ${prefix}datetime_created
   """;
   static String selectStatement = """
       SELECT

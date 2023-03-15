@@ -18,12 +18,12 @@ class Score extends Base {
   ScoreType scoreType;
 
   static String selectRows = """
-        ${staticTableName}.id AS ${prefix}id,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-        ${staticTableName}.player_id AS ${prefix}player_id,
-        ${staticTableName}.game_id AS ${prefix}game_id,
-        ${staticTableName}.timestamp AS ${prefix}timestamp,
-        ${staticTableName}.score_type_id AS ${prefix}score_type_id
+        $staticTableName.id AS ${prefix}id,
+        $staticTableName.datetime_created AS ${prefix}datetime_created,
+        $staticTableName.player_id AS ${prefix}player_id,
+        $staticTableName.game_id AS ${prefix}game_id,
+        $staticTableName.timestamp AS ${prefix}timestamp,
+        $staticTableName.score_type_id AS ${prefix}score_type_id
   """;
   static String selectStatement = """
       SELECT

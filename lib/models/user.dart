@@ -17,15 +17,15 @@ class User extends Base {
   String? avatar;
 
   static String selectRows = """
-        ${staticTableName}.name AS ${prefix}name,
-        ${staticTableName}.email AS ${prefix}email,
-        ${staticTableName}.username AS ${prefix}username,
-        ${staticTableName}.password_hash AS ${prefix}password_hash,
-        ${staticTableName}.export_dir AS ${prefix}export_dir,
-        ${staticTableName}.theme AS ${prefix}theme,
-        ${staticTableName}.avatar AS ${prefix}avatar,
-        ${staticTableName}.datetime_created AS ${prefix}datetime_created,
-        ${staticTableName}.id as ${prefix}id
+        $staticTableName.name AS ${prefix}name,
+        $staticTableName.email AS ${prefix}email,
+        $staticTableName.username AS ${prefix}username,
+        $staticTableName.password_hash AS ${prefix}password_hash,
+        $staticTableName.export_dir AS ${prefix}export_dir,
+        $staticTableName.theme AS ${prefix}theme,
+        $staticTableName.avatar AS ${prefix}avatar,
+        $staticTableName.datetime_created AS ${prefix}datetime_created,
+        $staticTableName.id as ${prefix}id
   """;
   static String selectStatement = """
       SELECT
