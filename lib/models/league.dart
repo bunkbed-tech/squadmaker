@@ -70,7 +70,7 @@ class League extends Base {
         gamesWon = other["${prefix}games_won"],
         gamesLost = other["${prefix}games_lost"],
         gamesPlayed = other["${prefix}games_played"],
-        super(other["league_id"],
+        super(other["${prefix}id"],
             DateTime.parse(other["${prefix}datetime_created"]));
 
   @override

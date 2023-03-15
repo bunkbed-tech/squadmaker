@@ -90,7 +90,7 @@ class Player extends Base {
         scoreAllTime = other["${prefix}score_all_time"],
         scoreAvgPerGame = other["${prefix}score_avg_per_game"],
         gamesAttended = other["${prefix}games_attended"],
-        super(other["player_id"],
+        super(other["${prefix}id"],
             DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
