@@ -1,6 +1,5 @@
 import 'package:squadmaker/models/base.dart' show Base;
 import 'package:squadmaker/models/player.dart' show Player;
-import 'package:squadmaker/models/gender.dart' show Gender;
 import 'package:squadmaker/models/enums.dart' show TrophyType;
 import 'package:sqflite/sqflite.dart' show Database;
 
@@ -24,11 +23,9 @@ class Trophy extends Base {
   static String selectStatement = """
       SELECT
         $selectRows,
-        ${Player.selectRows},
-        ${Gender.selectRows}
+        ${Player.selectRows}
       FROM $staticTableName 
       INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
-      INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (

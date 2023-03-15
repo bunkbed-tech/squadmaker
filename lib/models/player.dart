@@ -1,5 +1,5 @@
 import 'package:squadmaker/models/base.dart' show Base;
-import 'package:squadmaker/models/gender.dart' show Gender;
+import 'package:squadmaker/models/enums.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Player extends Base {
@@ -24,7 +24,7 @@ class Player extends Base {
         ${staticTableName}.id AS ${prefix}id,
         ${staticTableName}.datetime_created AS ${prefix}datetime_created,
         ${staticTableName}.name AS ${prefix}name,
-        ${staticTableName}.gender_id AS ${prefix}gender_id,
+        ${staticTableName}.gender AS ${prefix}gender,
         ${staticTableName}.pronouns AS ${prefix}pronouns,
         ${staticTableName}.phone AS ${prefix}phone,
         ${staticTableName}.email AS ${prefix}email,
@@ -37,17 +37,15 @@ class Player extends Base {
   """;
   static String selectStatement = """
       SELECT
-        $selectRows,
-        ${Gender.selectRows}
+        $selectRows
       FROM $staticTableName
-      INNER JOIN ${Gender.staticTableName} ON $staticTableName.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
         datetime_created TEXT NOT NULL,
         name TEXT NOT NULL,
-        gender_id INTEGER NOT NULL REFERENCES gender (id),
+        gender TEXT NOT NULL,
         pronouns TEXT,
         birthday TEXT,
         phone TEXT NOT NULL,
@@ -78,7 +76,8 @@ class Player extends Base {
 
   Player.fromMap(Map<String, dynamic> map)
       : name = map["${prefix}name"],
-        gender = Gender.fromMap(map),
+        gender = Gender.values.firstWhere(
+            (e) => e.toString().split(".").last == map["${prefix}gender"]),
         pronouns = map["${prefix}pronouns"],
         phone = map["${prefix}phone"],
         email = map["${prefix}email"],
@@ -97,7 +96,7 @@ class Player extends Base {
   Map<String, dynamic> toMap() {
     return {
       "name": name,
-      "gender_id": gender.id,
+      "gender": gender.name,
       "pronouns": pronouns,
       "phone": phone,
       "email": email,
@@ -113,7 +112,7 @@ class Player extends Base {
 
   @override
   String toString() {
-    return "Player{id: $id, name: $name, email: $email, gender_name: ${gender.name}}";
+    return "Player{id: $id, name: $name, email: $email, gender: ${gender.name}}";
   }
 
   static Future<List<Player>> list(Database db) async {

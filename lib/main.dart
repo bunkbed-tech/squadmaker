@@ -7,7 +7,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:squadmaker/models/player.dart';
-import 'package:squadmaker/models/gender.dart';
 import 'package:squadmaker/models/league.dart';
 import 'package:squadmaker/models/user.dart';
 import 'package:squadmaker/models/attendance.dart';
@@ -17,7 +16,7 @@ import 'package:squadmaker/models/score_type.dart';
 import 'package:squadmaker/models/score.dart';
 import 'package:squadmaker/models/trophy.dart';
 import 'package:squadmaker/models/enums.dart'
-    show Sport, ScoreNames, TrophyType;
+    show Sport, ScoreNames, TrophyType, Gender;
 
 void main() async {
   String appDocPath = "";
@@ -40,7 +39,6 @@ void main() async {
   var database = await openDatabase(
     join(appDocPath, "squadmaker.db"),
     onCreate: (db, version) async {
-      await db.execute(Gender.createStatement);
       await db.execute(Player.createStatement);
       await db.execute(League.createStatement);
       await db.execute(User.createStatement);
@@ -50,11 +48,9 @@ void main() async {
       await db.execute(ScoreType.createStatement);
       await db.execute(Score.createStatement);
       await db.execute(Trophy.createStatement);
-      await Gender.initialize(db);
     },
     version: 1,
   );
-  print(await Gender.list(database));
 
   var userA = User(
     name: "Tahoe Schrader",
@@ -76,7 +72,7 @@ void main() async {
   // TEST create a player
   var player1 = Player(
     name: "Player1",
-    gender: Gender(id: 1, name: "man"),
+    gender: Gender.man,
     //pronouns: "He/Him",
     //birthday: DateTime.utc(1995, 11, 27).toString(),
     phone: "+11234567890",
