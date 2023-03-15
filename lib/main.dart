@@ -1,22 +1,23 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite/sqflite.dart'; // show getDatabasesPath, openDatabase;
-import 'dart:io'; // show Platform, Directory;
+import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'models/player.dart';
-import 'models/gender.dart';
-import 'models/league.dart';
-import 'models/user.dart';
-import 'models/attendance.dart';
-import 'models/game.dart';
-import 'models/payment.dart';
-import 'models/score_type.dart';
-import 'models/score.dart';
-import 'models/trophy.dart';
-import 'models/enums.dart' show Sport, ScoreNames, TrophyType;
+import 'package:squadmaker/models/player.dart';
+import 'package:squadmaker/models/gender.dart';
+import 'package:squadmaker/models/league.dart';
+import 'package:squadmaker/models/user.dart';
+import 'package:squadmaker/models/attendance.dart';
+import 'package:squadmaker/models/game.dart';
+import 'package:squadmaker/models/payment.dart';
+import 'package:squadmaker/models/score_type.dart';
+import 'package:squadmaker/models/score.dart';
+import 'package:squadmaker/models/trophy.dart';
+import 'package:squadmaker/models/enums.dart'
+    show Sport, ScoreNames, TrophyType;
 
 void main() async {
   String appDocPath = "";

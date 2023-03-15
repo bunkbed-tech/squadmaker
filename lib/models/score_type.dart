@@ -1,6 +1,6 @@
-import 'base.dart' show Base;
+import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/enums.dart' show Sport, ScoreNames;
 import 'package:sqflite/sqflite.dart' show Database;
-import 'enums.dart' show Sport, ScoreNames;
 
 class ScoreType extends Base {
   static const String staticTableName = "score_type";

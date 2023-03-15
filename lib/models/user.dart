@@ -1,4 +1,4 @@
-import 'base.dart' show Base;
+import 'package:squadmaker/models/base.dart' show Base;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class User extends Base {

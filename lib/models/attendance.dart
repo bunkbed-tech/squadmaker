@@ -1,8 +1,8 @@
-import 'base.dart' show Base;
-import 'player.dart' show Player;
-import 'game.dart' show Game;
-import 'league.dart' show League;
-import 'gender.dart' show Gender;
+import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/player.dart' show Player;
+import 'package:squadmaker/models/game.dart' show Game;
+import 'package:squadmaker/models/league.dart' show League;
+import 'package:squadmaker/models/gender.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Attendance extends Base {

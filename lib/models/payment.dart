@@ -1,7 +1,7 @@
-import 'base.dart' show Base;
-import 'league.dart' show League;
-import 'player.dart' show Player;
-import 'gender.dart' show Gender;
+import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/league.dart' show League;
+import 'package:squadmaker/models/player.dart' show Player;
+import 'package:squadmaker/models/gender.dart' show Gender;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Payment extends Base {

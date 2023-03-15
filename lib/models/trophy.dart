@@ -1,7 +1,7 @@
-import 'base.dart' show Base;
-import 'player.dart' show Player;
-import 'gender.dart' show Gender;
-import 'enums.dart' show TrophyType;
+import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/player.dart' show Player;
+import 'package:squadmaker/models/gender.dart' show Gender;
+import 'package:squadmaker/models/enums.dart' show TrophyType;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Trophy extends Base {

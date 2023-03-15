@@ -1,5 +1,5 @@
-import 'base.dart' show Base;
-import 'league.dart' show League;
+import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/league.dart' show League;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Game extends Base {
