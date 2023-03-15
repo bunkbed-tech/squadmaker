@@ -87,16 +87,6 @@ void main() async {
   await player1.insert(database);
   print(await Player.list(database));
 
-  // Test create a league
-  var league1 = League(
-    name: "Cool Guys League",
-    teamName: "The Cool Guys",
-    sport: "Kickball",
-    captain: "Joe Schmo",
-  );
-  await league1.insert(database);
-  print(await League.list(database));
-
   // Test create a user
   var user1 = User(
     name: "Tahostan Schrader",
@@ -104,6 +94,15 @@ void main() async {
   );
   await user1.insert(database);
   print(await User.list(database));
+
+  // Test create a league
+  var league1 = League(
+      name: "Cool Guys League",
+      teamName: "The Cool Guys",
+      sport: Sport.kickball,
+      captain: user1);
+  await league1.insert(database);
+  print(await League.list(database));
 
   // Test add a game
   var game1 = Game(

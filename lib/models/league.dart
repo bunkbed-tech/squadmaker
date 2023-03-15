@@ -1,4 +1,6 @@
 import 'package:squadmaker/models/base.dart' show Base;
+import 'package:squadmaker/models/enums.dart' show Sport;
+import 'package:squadmaker/models/user.dart' show User;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class League extends Base {
@@ -9,8 +11,8 @@ class League extends Base {
 
   String name;
   String teamName;
-  String sport; // supposed to be a sport
-  String captain; // supposed to be a user
+  Sport sport;
+  User captain;
   int? gamesWon;
   int? gamesLost;
   int? gamesPlayed;
@@ -21,15 +23,17 @@ class League extends Base {
     ${staticTableName}.name AS ${prefix}name,
     ${staticTableName}.team_name AS ${prefix}team_name,
     ${staticTableName}.sport AS ${prefix}sport,
-    ${staticTableName}.captain AS ${prefix}captain,
+    ${staticTableName}.captain_id AS ${prefix}captain_id,
     ${staticTableName}.games_won AS ${prefix}games_won,
     ${staticTableName}.games_lost AS ${prefix}games_lost,
     ${staticTableName}.games_played AS ${prefix}games_played
   """;
   static String selectStatement = """
       SELECT
-        $selectRows
+        $selectRows,
+        ${User.selectRows}
       FROM $staticTableName
+      INNER JOIN ${User.staticTableName} ON $staticTableName.captain_id = ${User.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
@@ -38,7 +42,7 @@ class League extends Base {
         name TEXT NOT NULL,
         team_name TEXT NOT NULL,
         sport TEXT NOT NULL,
-        captain TEXT NOT NULL,
+        captain_id INTEGER NOT NULL REFERENCES user (id),
         games_won INTEGER NOT NULL DEFAULT (0),
         games_lost INTEGER NOT NULL DEFAULT (0),
         games_played INTEGER NOT NULL DEFAULT (0)
@@ -60,8 +64,9 @@ class League extends Base {
   League.create(Map<String, dynamic> other)
       : name = other["${prefix}name"],
         teamName = other["${prefix}team_name"],
-        sport = other["${prefix}sport"],
-        captain = other["${prefix}captain"],
+        sport = Sport.values.firstWhere(
+            (e) => e.toString().split(".").last == other["${prefix}sport"]),
+        captain = User.create(other),
         gamesWon = other["${prefix}games_won"],
         gamesLost = other["${prefix}games_lost"],
         gamesPlayed = other["${prefix}games_played"],
@@ -73,8 +78,8 @@ class League extends Base {
     return {
       "name": name,
       "team_name": teamName,
-      "sport": sport,
-      "captain": captain,
+      "sport": sport.name,
+      "captain_id": captain.id,
       "games_won": gamesWon,
       "games_lost": gamesLost,
       "games_played": gamesPlayed,

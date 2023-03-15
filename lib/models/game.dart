@@ -1,5 +1,6 @@
 import 'package:squadmaker/models/base.dart' show Base;
 import 'package:squadmaker/models/league.dart' show League;
+import 'package:squadmaker/models/user.dart' show User;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Game extends Base {
@@ -30,9 +31,11 @@ class Game extends Base {
   static String selectStatement = """
       SELECT
         $selectRows,
-        ${League.selectRows}
+        ${League.selectRows},
+        ${User.selectRows}
       FROM $staticTableName
       INNER JOIN ${League.staticTableName} ON $staticTableName.${League.staticTableName}_id = ${League.staticTableName}.id
+      INNER JOIN ${User.staticTableName} ON ${League.staticTableName}.captain_id = ${User.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (

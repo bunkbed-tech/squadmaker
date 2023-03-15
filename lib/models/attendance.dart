@@ -3,6 +3,7 @@ import 'package:squadmaker/models/player.dart' show Player;
 import 'package:squadmaker/models/game.dart' show Game;
 import 'package:squadmaker/models/league.dart' show League;
 import 'package:squadmaker/models/gender.dart' show Gender;
+import 'package:squadmaker/models/user.dart' show User;
 import 'package:sqflite/sqflite.dart' show Database;
 
 class Attendance extends Base {
@@ -28,12 +29,14 @@ class Attendance extends Base {
         ${Player.selectRows},
         ${Gender.selectRows},
         ${Game.selectRows},
-        ${League.selectRows}
+        ${League.selectRows},
+        ${User.selectRows}
       FROM $staticTableName
       INNER JOIN ${Player.staticTableName} ON $staticTableName.${Player.staticTableName}_id = ${Player.staticTableName}.id
       INNER JOIN ${Gender.staticTableName} ON ${Player.staticTableName}.${Gender.staticTableName}_id = ${Gender.staticTableName}.id
       INNER JOIN ${Game.staticTableName} ON $staticTableName.${Game.staticTableName}_id = ${Game.staticTableName}.id
       INNER JOIN ${League.staticTableName} ON ${Game.staticTableName}.${League.staticTableName}_id = ${League.staticTableName}.id
+      INNER JOIN ${User.staticTableName} ON ${League.staticTableName}.captain_id = ${User.staticTableName}.id
   """;
   static String createStatement = """
       CREATE TABLE $staticTableName (
