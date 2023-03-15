@@ -57,16 +57,16 @@ class User extends Base {
     this.avatar,
   }) : super(id, datetimeCreated);
 
-  User.create(Map<String, dynamic> self)
-      : name = self["${prefix}name"],
-        email = self["${prefix}email"],
-        username = self["${prefix}username"],
-        passwordHash = self["${prefix}password_hash"],
-        exportDir = self["${prefix}export_dir"],
-        theme = self["${prefix}theme"],
-        avatar = self["${prefix}avatar"],
-        super(self["${prefix}id"],
-            DateTime.parse(self["${prefix}datetime_created"]));
+  User.fromMap(Map<String, dynamic> map)
+      : name = map["${prefix}name"],
+        email = map["${prefix}email"],
+        username = map["${prefix}username"],
+        passwordHash = map["${prefix}password_hash"],
+        exportDir = map["${prefix}export_dir"],
+        theme = map["${prefix}theme"],
+        avatar = map["${prefix}avatar"],
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -89,6 +89,6 @@ class User extends Base {
 
   static Future<List<User>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => User.create(maps[i]));
+    return List.generate(maps.length, (i) => User.fromMap(maps[i]));
   }
 }

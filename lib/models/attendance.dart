@@ -56,12 +56,12 @@ class Attendance extends Base {
     required this.attended,
   }) : super(id, datetimeCreated);
 
-  Attendance.create(Map<String, dynamic> self)
-      : player = Player.create(self),
-        game = Game.create(self),
-        attended = self["${prefix}attended"] != 0,
-        super(self["${prefix}id"],
-            DateTime.parse(self["${prefix}datetime_created"]));
+  Attendance.fromMap(Map<String, dynamic> map)
+      : player = Player.fromMap(map),
+        game = Game.fromMap(map),
+        attended = map["${prefix}attended"] != 0,
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -80,6 +80,6 @@ class Attendance extends Base {
 
   static Future<List<Attendance>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Attendance.create(maps[i]));
+    return List.generate(maps.length, (i) => Attendance.fromMap(maps[i]));
   }
 }

@@ -53,12 +53,12 @@ class Payment extends Base {
     required this.paid,
   }) : super(id, datetimeCreated);
 
-  Payment.create(Map<String, dynamic> self)
-      : player = Player.create(self),
-        league = League.create(self),
-        paid = self["${prefix}paid"] != 0,
-        super(self["${prefix}id"],
-            DateTime.parse(self["${prefix}datetime_created"]));
+  Payment.fromMap(Map<String, dynamic> map)
+      : player = Player.fromMap(map),
+        league = League.fromMap(map),
+        paid = map["${prefix}paid"] != 0,
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -77,6 +77,6 @@ class Payment extends Base {
 
   static Future<List<Payment>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Payment.create(maps[i]));
+    return List.generate(maps.length, (i) => Payment.fromMap(maps[i]));
   }
 }

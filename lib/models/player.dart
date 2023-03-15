@@ -76,22 +76,22 @@ class Player extends Base {
     this.gamesAttended,
   }) : super(id, datetimeCreated);
 
-  Player.create(Map<String, dynamic> other)
-      : name = other["${prefix}name"],
-        gender = Gender.create(other),
-        pronouns = other["${prefix}pronouns"],
-        phone = other["${prefix}phone"],
-        email = other["${prefix}email"],
-        birthday = other["${prefix}birthday"] == "null"
+  Player.fromMap(Map<String, dynamic> map)
+      : name = map["${prefix}name"],
+        gender = Gender.fromMap(map),
+        pronouns = map["${prefix}pronouns"],
+        phone = map["${prefix}phone"],
+        email = map["${prefix}email"],
+        birthday = map["${prefix}birthday"] == "null"
             ? null
-            : DateTime.parse(other["${prefix}birthday"]),
-        placeFrom = other["${prefix}place_from"],
-        photo = other["${prefix}photo"],
-        scoreAllTime = other["${prefix}score_all_time"],
-        scoreAvgPerGame = other["${prefix}score_avg_per_game"],
-        gamesAttended = other["${prefix}games_attended"],
-        super(other["${prefix}id"],
-            DateTime.parse(other["${prefix}datetime_created"]));
+            : DateTime.parse(map["${prefix}birthday"]),
+        placeFrom = map["${prefix}place_from"],
+        photo = map["${prefix}photo"],
+        scoreAllTime = map["${prefix}score_all_time"],
+        scoreAvgPerGame = map["${prefix}score_avg_per_game"],
+        gamesAttended = map["${prefix}games_attended"],
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -118,6 +118,6 @@ class Player extends Base {
 
   static Future<List<Player>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Player.create(maps[i]));
+    return List.generate(maps.length, (i) => Player.fromMap(maps[i]));
   }
 }

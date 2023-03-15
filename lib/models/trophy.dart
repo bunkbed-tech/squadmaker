@@ -48,13 +48,13 @@ class Trophy extends Base {
       required this.dateAwarded})
       : super(id, datetimeCreated);
 
-  Trophy.create(Map<String, dynamic> another)
-      : player = Player.create(another),
-        trophyType = TrophyType.values.firstWhere((e) =>
-            e.toString().split(".").last == another["${prefix}trophy_type"]),
-        dateAwarded = DateTime.parse(another["${prefix}date_awarded"]),
-        super(another["${prefix}id"],
-            DateTime.parse(another["${prefix}datetime_created"]));
+  Trophy.fromMap(Map<String, dynamic> map)
+      : player = Player.fromMap(map),
+        trophyType = TrophyType.values.firstWhere(
+            (e) => e.toString().split(".").last == map["${prefix}trophy_type"]),
+        dateAwarded = DateTime.parse(map["${prefix}date_awarded"]),
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -73,6 +73,6 @@ class Trophy extends Base {
 
   static Future<List<Trophy>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Trophy.create(maps[i]));
+    return List.generate(maps.length, (i) => Trophy.fromMap(maps[i]));
   }
 }

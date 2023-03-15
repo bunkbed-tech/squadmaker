@@ -63,13 +63,13 @@ class Score extends Base {
     required this.scoreType,
   }) : super(id, datetimeCreated);
 
-  Score.create(Map<String, dynamic> self)
-      : player = Player.create(self),
-        game = Game.create(self),
-        timestamp = DateTime.parse(self["${prefix}timestamp"]),
-        scoreType = ScoreType.create(self),
-        super(self["${prefix}id"],
-            DateTime.parse(self["${prefix}datetime_created"]));
+  Score.fromMap(Map<String, dynamic> map)
+      : player = Player.fromMap(map),
+        game = Game.fromMap(map),
+        timestamp = DateTime.parse(map["${prefix}timestamp"]),
+        scoreType = ScoreType.fromMap(map),
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -89,6 +89,6 @@ class Score extends Base {
 
   static Future<List<Score>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Score.create(maps[i]));
+    return List.generate(maps.length, (i) => Score.fromMap(maps[i]));
   }
 }

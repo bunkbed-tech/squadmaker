@@ -63,16 +63,16 @@ class Game extends Base {
     this.groupPhoto,
   }) : super(id, datetimeCreated);
 
-  Game.create(Map<String, dynamic> other)
-      : opponentName = other["${prefix}opponent_name"],
-        location = other["${prefix}location"],
-        startDatetime = DateTime.parse(other["${prefix}start_datetime"]),
-        league = League.create(other),
-        yourScore = other["${prefix}your_score"],
-        opponentScore = other["${prefix}opponent_score"],
-        groupPhoto = other["${prefix}group_photo"],
-        super(other["${prefix}id"],
-            DateTime.parse(other["${prefix}datetime_created"]));
+  Game.fromMap(Map<String, dynamic> map)
+      : opponentName = map["${prefix}opponent_name"],
+        location = map["${prefix}location"],
+        startDatetime = DateTime.parse(map["${prefix}start_datetime"]),
+        league = League.fromMap(map),
+        yourScore = map["${prefix}your_score"],
+        opponentScore = map["${prefix}opponent_score"],
+        groupPhoto = map["${prefix}group_photo"],
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -95,6 +95,6 @@ class Game extends Base {
 
   static Future<List<Game>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Game.create(maps[i]));
+    return List.generate(maps.length, (i) => Game.fromMap(maps[i]));
   }
 }

@@ -42,14 +42,14 @@ class ScoreType extends Base {
     required this.name,
   }) : super(id, datetimeCreated);
 
-  ScoreType.create(Map<String, dynamic> other)
-      : value = other["${prefix}value"],
+  ScoreType.fromMap(Map<String, dynamic> map)
+      : value = map["${prefix}value"],
         sport = Sport.values.firstWhere(
-            (e) => e.toString().split(".").last == other["${prefix}sport"]),
+            (e) => e.toString().split(".").last == map["${prefix}sport"]),
         name = ScoreNames.values.firstWhere(
-            (e) => e.toString().split(".").last == other["${prefix}name"]),
-        super(other["${prefix}id"],
-            DateTime.parse(other["${prefix}datetime_created"]));
+            (e) => e.toString().split(".").last == map["${prefix}name"]),
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -68,6 +68,6 @@ class ScoreType extends Base {
 
   static Future<List<ScoreType>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => ScoreType.create(maps[i]));
+    return List.generate(maps.length, (i) => ScoreType.fromMap(maps[i]));
   }
 }

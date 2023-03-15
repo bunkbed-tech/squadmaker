@@ -33,10 +33,10 @@ class Gender extends Base {
     required this.name,
   }) : super(id, datetimeCreated);
 
-  Gender.create(Map<String, dynamic> other)
-      : name = other["${prefix}name"],
-        super(other["${prefix}id"],
-            DateTime.parse(other["${prefix}datetime_created"]));
+  Gender.fromMap(Map<String, dynamic> map)
+      : name = map["${prefix}name"],
+        super(map["${prefix}id"],
+            DateTime.parse(map["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
@@ -53,7 +53,7 @@ class Gender extends Base {
 
   static Future<List<Gender>> list(Database db) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(selectStatement);
-    return List.generate(maps.length, (i) => Gender.create(maps[i]));
+    return List.generate(maps.length, (i) => Gender.fromMap(maps[i]));
   }
 
   static Future<void> initialize(Database db) async {
