@@ -6,6 +6,7 @@ class Game extends Base {
   static const String staticTableName = "game";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   String opponentName;
   String location;
@@ -15,16 +16,16 @@ class Game extends Base {
   int? opponentScore;
   String? groupPhoto;
 
-  static const String selectStatement = """
-        game.opponent_name AS game__opponent_name,
-        game.location AS game__location,
-        game.start_datetime AS game__start_datetime,
-        game.league_id AS game__league_id,
-        game.your_score AS game__your_score,
-        game.opponent_score AS game__opponent_score,
-        game.group_photo AS game__group_photo,
-        game.datetime_created AS game__datetime_created,
-        game.id AS game__id
+  static String selectStatement = """
+        game.opponent_name AS ${prefix}opponent_name,
+        game.location AS ${prefix}location,
+        game.start_datetime AS ${prefix}start_datetime,
+        game.league_id AS ${prefix}league_id,
+        game.your_score AS ${prefix}your_score,
+        game.opponent_score AS ${prefix}opponent_score,
+        game.group_photo AS ${prefix}group_photo,
+        game.datetime_created AS ${prefix}datetime_created,
+        game.id AS ${prefix}id
         """;
 
   Game({
@@ -40,15 +41,15 @@ class Game extends Base {
   }) : super(id, datetimeCreated);
 
   Game.create(Map<String, dynamic> other)
-      : opponentName = other["game__opponent_name"],
-        location = other["game__location"],
-        startDatetime = DateTime.parse(other["game__start_datetime"]),
+      : opponentName = other["${prefix}opponent_name"],
+        location = other["${prefix}location"],
+        startDatetime = DateTime.parse(other["${prefix}start_datetime"]),
         league = League.create(other),
-        yourScore = other["game__your_score"],
-        opponentScore = other["game__opponent_score"],
-        groupPhoto = other["game__group_photo"],
+        yourScore = other["${prefix}your_score"],
+        opponentScore = other["${prefix}opponent_score"],
+        groupPhoto = other["${prefix}group_photo"],
         super(
-            other["game__id"], DateTime.parse(other["game__datetime_created"]));
+            other["${prefix}id"], DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

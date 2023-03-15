@@ -10,19 +10,20 @@ class Score extends Base {
   static const String staticTableName = "score";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   Player player;
   Game game;
   DateTime timestamp;
   ScoreType scoreType;
 
-  static const String selectStatement = """
-        score.id AS score__id,
-        score.datetime_created AS score__datetime_created,
-        score.player_id AS score__player_id,
-        score.game_id AS score__game_id,
-        score.timestamp AS score__timestamp,
-        score.score_type_id AS score__score_type_id
+  static String selectStatement = """
+        score.id AS ${prefix}id,
+        score.datetime_created AS ${prefix}datetime_created,
+        score.player_id AS ${prefix}player_id,
+        score.game_id AS ${prefix}game_id,
+        score.timestamp AS ${prefix}timestamp,
+        score.score_type_id AS ${prefix}score_type_id
         """;
 
   Score({
@@ -37,10 +38,10 @@ class Score extends Base {
   Score.create(Map<String, dynamic> self)
       : player = Player.create(self),
         game = Game.create(self),
-        timestamp = DateTime.parse(self["score__timestamp"]),
+        timestamp = DateTime.parse(self["${prefix}timestamp"]),
         scoreType = ScoreType.create(self),
         super(
-            self["score__id"], DateTime.parse(self["score__datetime_created"]));
+            self["${prefix}id"], DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

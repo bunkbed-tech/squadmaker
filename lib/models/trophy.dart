@@ -8,17 +8,18 @@ class Trophy extends Base {
   static const String staticTableName = "trophy";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   Player player;
   TrophyType trophyType;
   DateTime dateAwarded;
 
-  static const String selectStatement = """
-        trophy.id AS trophy__id,
-        trophy.datetime_created AS trophy__datetime_created,
-        trophy.player_id AS trophy__player_id,
-        trophy.trophy_type AS trophy__trophy_type,
-        trophy.date_awarded AS trophy__date_awarded
+  static String selectStatement = """
+        trophy.id AS ${prefix}id,
+        trophy.datetime_created AS ${prefix}datetime_created,
+        trophy.player_id AS ${prefix}player_id,
+        trophy.trophy_type AS ${prefix}trophy_type,
+        trophy.date_awarded AS ${prefix}date_awarded
         """;
 
   Trophy(
@@ -32,10 +33,10 @@ class Trophy extends Base {
   Trophy.create(Map<String, dynamic> another)
       : player = Player.create(another),
         trophyType = TrophyType.values.firstWhere((e) =>
-            e.toString().split(".").last == another["trophy__trophy_type"]),
-        dateAwarded = DateTime.parse(another["trophy__date_awarded"]),
-        super(another["trophy__id"],
-            DateTime.parse(another["trophy__datetime_created"]));
+            e.toString().split(".").last == another["${prefix}trophy_type"]),
+        dateAwarded = DateTime.parse(another["${prefix}date_awarded"]),
+        super(another["${prefix}id"],
+            DateTime.parse(another["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

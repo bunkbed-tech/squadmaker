@@ -8,17 +8,18 @@ class Payment extends Base {
   static const String staticTableName = "payment";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   Player player;
   League league;
   bool paid;
 
-  static const String selectStatement = """
-    payment.id AS payment__id,
-    payment.datetime_created AS payment__datetime_created,
-    payment.player_id AS payment__player_id,
-    payment.league_id AS payment__league_id,
-    payment.paid AS payment__paid
+  static String selectStatement = """
+    payment.id AS ${prefix}id,
+    payment.datetime_created AS ${prefix}datetime_created,
+    payment.player_id AS ${prefix}player_id,
+    payment.league_id AS ${prefix}league_id,
+    payment.paid AS ${prefix}paid
   """;
 
   Payment({
@@ -32,9 +33,9 @@ class Payment extends Base {
   Payment.create(Map<String, dynamic> self)
       : player = Player.create(self),
         league = League.create(self),
-        paid = self["payment__paid"] != 0,
-        super(self["payment__id"],
-            DateTime.parse(self["payment__datetime_created"]));
+        paid = self["${prefix}paid"] != 0,
+        super(self["${prefix}id"],
+            DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

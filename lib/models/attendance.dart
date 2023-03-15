@@ -9,17 +9,18 @@ class Attendance extends Base {
   static const String staticTableName = "attendance";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   Player player;
   Game game;
   bool attended;
 
-  static const String selectStatement = """
-        attendance.player_id AS attendance__player_id,
-        attendance.game_id AS attendance__game_id,
-        attendance.attended AS attendance__attended,
-        attendance.id AS attendance__id,
-        attendance.datetime_created AS attendance__datetime_created
+  static String selectStatement = """
+        attendance.player_id AS ${prefix}player_id,
+        attendance.game_id AS ${prefix}game_id,
+        attendance.attended AS ${prefix}attended,
+        attendance.id AS ${prefix}id,
+        attendance.datetime_created AS ${prefix}datetime_created
         """;
 
   Attendance({
@@ -33,9 +34,9 @@ class Attendance extends Base {
   Attendance.create(Map<String, dynamic> self)
       : player = Player.create(self),
         game = Game.create(self),
-        attended = self["attendance__attended"] != 0,
-        super(self["attendance__id"],
-            DateTime.parse(self["attendance__datetime_created"]));
+        attended = self["${prefix}attended"] != 0,
+        super(self["${prefix}id"],
+            DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

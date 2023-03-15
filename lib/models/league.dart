@@ -5,6 +5,7 @@ class League extends Base {
   static const String staticTableName = "league";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   String name;
   String teamName;
@@ -14,16 +15,16 @@ class League extends Base {
   int? gamesLost;
   int? gamesPlayed;
 
-  static const String selectStatement = """
-    league.id AS league__id,
-    league.datetime_created AS league__datetime_created,
-    league.name AS league__name,
-    league.team_name AS league__team_name,
-    league.sport AS league__sport,
-    league.captain AS league__captain,
-    league.games_won AS league__games_won,
-    league.games_lost AS league__games_lost,
-    league.games_played AS league__games_played
+  static String selectStatement = """
+    league.id AS ${prefix}id,
+    league.datetime_created AS ${prefix}datetime_created,
+    league.name AS ${prefix}name,
+    league.team_name AS ${prefix}team_name,
+    league.sport AS ${prefix}sport,
+    league.captain AS ${prefix}captain,
+    league.games_won AS ${prefix}games_won,
+    league.games_lost AS ${prefix}games_lost,
+    league.games_played AS ${prefix}games_played
   """;
 
   League({
@@ -39,15 +40,15 @@ class League extends Base {
   }) : super(id, datetimeCreated);
 
   League.create(Map<String, dynamic> other)
-      : name = other["league__name"],
-        teamName = other["league__team_name"],
-        sport = other["league__sport"],
-        captain = other["league__captain"],
-        gamesWon = other["league__games_won"],
-        gamesLost = other["league__games_lost"],
-        gamesPlayed = other["league__games_played"],
+      : name = other["${prefix}name"],
+        teamName = other["${prefix}team_name"],
+        sport = other["${prefix}sport"],
+        captain = other["${prefix}captain"],
+        gamesWon = other["${prefix}games_won"],
+        gamesLost = other["${prefix}games_lost"],
+        gamesPlayed = other["${prefix}games_played"],
         super(other["league_id"],
-            DateTime.parse(other["league__datetime_created"]));
+            DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

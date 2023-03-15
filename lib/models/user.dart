@@ -5,6 +5,7 @@ class User extends Base {
   static const String staticTableName = "user";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   String name;
   String email;
@@ -14,16 +15,16 @@ class User extends Base {
   String? theme; // should be an AppTheme (enum)
   String? avatar;
 
-  static const String selectStatement = """
-        user.name AS user__name,
-        user.email AS user__email,
-        user.username AS user__username,
-        user.password_hash AS user__password_hash,
-        user.export_dir AS user__export_dir,
-        user.theme AS user__theme,
-        user.avatar AS user__avatar,
-        user.datetime_created AS user__datetime_created,
-        user.id as user__id
+  static String selectStatement = """
+        user.name AS ${prefix}name,
+        user.email AS ${prefix}email,
+        user.username AS ${prefix}username,
+        user.password_hash AS ${prefix}password_hash,
+        user.export_dir AS ${prefix}export_dir,
+        user.theme AS ${prefix}theme,
+        user.avatar AS ${prefix}avatar,
+        user.datetime_created AS ${prefix}datetime_created,
+        user.id as ${prefix}id
         """;
 
   User({
@@ -39,14 +40,14 @@ class User extends Base {
   }) : super(id, datetimeCreated);
 
   User.create(Map<String, dynamic> self)
-      : name = self["user__name"],
-        email = self["user__email"],
-        username = self["user__username"],
-        passwordHash = self["user__password_hash"],
-        exportDir = self["user__export_dir"],
-        theme = self["user__theme"],
-        avatar = self["user__avatar"],
-        super(self["user__id"], DateTime.parse(self["user__datetime_created"]));
+      : name = self["${prefix}name"],
+        email = self["${prefix}email"],
+        username = self["${prefix}username"],
+        passwordHash = self["${prefix}password_hash"],
+        exportDir = self["${prefix}export_dir"],
+        theme = self["${prefix}theme"],
+        avatar = self["${prefix}avatar"],
+        super(self["${prefix}id"], DateTime.parse(self["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

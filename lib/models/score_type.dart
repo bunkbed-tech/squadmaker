@@ -6,17 +6,18 @@ class ScoreType extends Base {
   static const String staticTableName = "score_type";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   int value;
   Sport sport; // currently using an enum
   ScoreNames name; // currently using enum
 
-  static const String selectStatement = """
-        score_type.id AS score_type__id,
-        score_type.datetime_created AS score_type__datetime_created,
-        score_type.name AS score_type__name,
-        score_type.sport AS score_type__sport,
-        score_type.value AS score_type__value
+  static String selectStatement = """
+        score_type.id AS ${prefix}id,
+        score_type.datetime_created AS ${prefix}datetime_created,
+        score_type.name AS ${prefix}name,
+        score_type.sport AS ${prefix}sport,
+        score_type.value AS ${prefix}value
         """;
 
   ScoreType({
@@ -28,13 +29,13 @@ class ScoreType extends Base {
   }) : super(id, datetimeCreated);
 
   ScoreType.create(Map<String, dynamic> other)
-      : value = other["score_type__value"],
+      : value = other["${prefix}value"],
         sport = Sport.values.firstWhere(
-            (e) => e.toString().split(".").last == other["score_type__sport"]),
+            (e) => e.toString().split(".").last == other["${prefix}sport"]),
         name = ScoreNames.values.firstWhere(
-            (e) => e.toString().split(".").last == other["score_type__name"]),
-        super(other["score_type__id"],
-            DateTime.parse(other["score_type__datetime_created"]));
+            (e) => e.toString().split(".").last == other["${prefix}name"]),
+        super(other["${prefix}id"],
+            DateTime.parse(other["${prefix}datetime_created"]));
 
   static String createSQLTable() {
     return """

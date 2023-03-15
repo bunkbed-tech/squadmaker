@@ -6,6 +6,7 @@ class Player extends Base {
   static const String staticTableName = "player";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   String name;
   String email;
@@ -19,20 +20,20 @@ class Player extends Base {
   double? scoreAvgPerGame;
   int? gamesAttended;
 
-  static const String selectStatement = """
-        player.id AS player__id,
-        player.datetime_created AS player__datetime_created,
-        player.name AS player__name,
-        player.gender_id AS player__gender_id,
-        player.pronouns AS player__pronouns,
-        player.phone AS player__phone,
-        player.email AS player__email,
-        player.birthday AS player__birthday,
-        player.place_from AS player__place_from,
-        player.photo AS player__photo,
-        player.score_all_time AS player__score_all_time,
-        player.score_avg_per_game AS player__score_avg_per_game,
-        player.games_attended AS player__games_attended
+  static String selectStatement = """
+        player.id AS ${prefix}id,
+        player.datetime_created AS ${prefix}datetime_created,
+        player.name AS ${prefix}name,
+        player.gender_id AS ${prefix}gender_id,
+        player.pronouns AS ${prefix}pronouns,
+        player.phone AS ${prefix}phone,
+        player.email AS ${prefix}email,
+        player.birthday AS ${prefix}birthday,
+        player.place_from AS ${prefix}place_from,
+        player.photo AS ${prefix}photo,
+        player.score_all_time AS ${prefix}score_all_time,
+        player.score_avg_per_game AS ${prefix}score_avg_per_game,
+        player.games_attended AS ${prefix}games_attended
         """;
 
   Player({
@@ -52,21 +53,21 @@ class Player extends Base {
   }) : super(id, datetimeCreated);
 
   Player.create(Map<String, dynamic> other)
-      : name = other["player__name"],
+      : name = other["${prefix}name"],
         gender = Gender.create(other),
-        pronouns = other["player__pronouns"],
-        phone = other["player__phone"],
-        email = other["player__email"],
-        birthday = other["player__birthday"] == "null"
+        pronouns = other["${prefix}pronouns"],
+        phone = other["${prefix}phone"],
+        email = other["${prefix}email"],
+        birthday = other["${prefix}birthday"] == "null"
             ? null
-            : DateTime.parse(other["player__birthday"]),
-        placeFrom = other["player__place_from"],
-        photo = other["player__photo"],
-        scoreAllTime = other["player__score_all_time"],
-        scoreAvgPerGame = other["player__score_avg_per_game"],
-        gamesAttended = other["player__games_attended"],
+            : DateTime.parse(other["${prefix}birthday"]),
+        placeFrom = other["${prefix}place_from"],
+        photo = other["${prefix}photo"],
+        scoreAllTime = other["${prefix}score_all_time"],
+        scoreAvgPerGame = other["${prefix}score_avg_per_game"],
+        gamesAttended = other["${prefix}games_attended"],
         super(other["player_id"],
-            DateTime.parse(other["player__datetime_created"]));
+            DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {

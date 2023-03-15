@@ -5,13 +5,14 @@ class Gender extends Base {
   static const String staticTableName = "gender";
   @override
   String get tableName => staticTableName;
+  static String get prefix => "${staticTableName}__";
 
   String name;
 
-  static const String selectStatement = """
-        gender.id AS gender__id,
-        gender.datetime_created AS gender__datetime_created,
-        gender.name AS gender__name
+  static String selectStatement = """
+        gender.id AS ${prefix}id,
+        gender.datetime_created AS ${prefix}datetime_created,
+        gender.name AS ${prefix}name
         """;
 
   Gender({
@@ -21,9 +22,9 @@ class Gender extends Base {
   }) : super(id, datetimeCreated);
 
   Gender.create(Map<String, dynamic> other)
-      : name = other["gender__name"],
-        super(other["gender__id"],
-            DateTime.parse(other["gender__datetime_created"]));
+      : name = other["${prefix}name"],
+        super(other["${prefix}id"],
+            DateTime.parse(other["${prefix}datetime_created"]));
 
   @override
   Map<String, dynamic> toMap() {
