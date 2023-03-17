@@ -7,3 +7,4 @@
 # Miscellaneous
 .DS_Store
 /build/
+*.sw*
