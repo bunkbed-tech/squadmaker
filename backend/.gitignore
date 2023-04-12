@@ -1,2 +1,4 @@
 /target/
 *.pem
+/data/
+/logs/

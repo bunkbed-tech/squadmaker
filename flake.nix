@@ -17,8 +17,26 @@
         inherit system;
         overlays = [ devshell.overlay fenix-flake.overlays.default ];
       };
+      mkApp = command: script: {
+        type = "app";
+        program = toString (pkgs.writers.writeBash command script);
+      };
     in
     {
+      apps.default = mkApp "test" ''
+        export PGDATA="$(pwd)/data/postgresql"
+        PGLOGS="$(pwd)/logs/postgresql"
+        mkdir -p "$PGDATA"
+        mkdir -p "$PGLOGS"
+        [[ -d "$PGDATA" && ! $(ls -A "$PGDATA") ]] && initdb -D "$PGDATA"
+        pg_ctl -l "$PGLOGS/$(date +"%Y%m%d")" start
+        createuser -P test_user
+        createdb -O test_user testing_db
+        psql -f sql/schema.sql testing_db
+        cargo run
+        pg_ctl stop
+        rm -rf "$PGDATA"
+      '';
       packages.default = fenix-flake.packages.default.toolchain;
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
@@ -33,6 +51,7 @@
             "rustfmt"
           ])
           rust-analyzer-nightly
+          postgresql
         ];
       };
     }
