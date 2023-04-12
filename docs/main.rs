@@ -1,3 +1,5 @@
+// Examples from actix.rs
+
 use actix_web::{get, post, web, guard, App, HttpResponse, HttpServer, Responder};
 use std::time::Duration;
 use std::sync::Mutex;
@@ -8,7 +10,6 @@ struct AppState {
     app_name: String,
     counter: Mutex<i32>,
 }
-
 
 async fn index() -> impl Responder {
     "Hello world HTML!"
