@@ -1,2 +1,2 @@
-SELECT id, first_name, last_name
-FROM testing.users
+SELECT id, created_at, name, email, username, password_hash, avatar
+FROM "user"

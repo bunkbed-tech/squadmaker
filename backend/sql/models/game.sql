@@ -1,6 +1,6 @@
 CREATE TABLE game (
   id SERIAL PRIMARY KEY,
-  datetime_created TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   opponent_name TEXT NOT NULL,
   location TEXT NOT NULL,
   start_datetime TIMESTAMPTZ NOT NULL,

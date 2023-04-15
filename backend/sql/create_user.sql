@@ -1,3 +1,3 @@
-INSERT INTO testing.users(first_name, last_name)
-VALUES ($1, $2)
-RETURNING id, first_name, last_name;
+INSERT INTO "user" (name, email, username, password_hash, avatar)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, created_at, name, email, username, password_hash, avatar

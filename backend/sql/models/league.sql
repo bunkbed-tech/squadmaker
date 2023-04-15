@@ -1,6 +1,6 @@
 CREATE TABLE league (
   id SERIAL PRIMARY KEY,
-  datetime_created TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   name TEXT NOT NULL,
   team_name TEXT NOT NULL,
   sport TEXT NOT NULL,
