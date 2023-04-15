@@ -2,7 +2,7 @@ CREATE TABLE $staticTableName (
   id SERIAL PRIMARY KEY,
   datetime_created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
-  gender TEXT NOT NULL,
+  gender gender NOT NULL,
   pronouns TEXT,
   birthday TEXT,
   phone TEXT NOT NULL,
