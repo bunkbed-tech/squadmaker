@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE "user" (
   id SERIAL PRIMARY KEY,
   datetime_created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
