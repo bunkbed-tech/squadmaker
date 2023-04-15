@@ -3,11 +3,15 @@ CREATE SCHEMA testing;
 
 CREATE TABLE testing.users (
 	id  BIGSERIAL PRIMARY KEY,
-	email       VARCHAR(200) NOT NULL,
 	first_name  VARCHAR(200) NOT NULL,
-	last_name   VARCHAR(200) NOT NULL,
-	username    VARCHAR(50) UNIQUE NOT NULL,
-	UNIQUE (username)
+	last_name   VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE testing.articles (
+	id  BIGSERIAL PRIMARY KEY,
+	title       VARCHAR(200) NOT NULL,
+	content     VARCHAR(200) NOT NULL,
+	created_by  BIGINT NOT NULL REFERENCES testing.users (id)
 );
 
 GRANT ALL PRIVILEGES ON SCHEMA testing TO test_user;
