@@ -1,4 +1,4 @@
-CREATE TABLE $staticTableName (
+CREATE TABLE player (
   id SERIAL PRIMARY KEY,
   datetime_created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
