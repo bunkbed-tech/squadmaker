@@ -9,7 +9,7 @@ use crate::AppState;
 
 #[derive(Serialize, FromRow)]
 struct User {
-    id: i64,
+    id: i32,
     first_name: String,
     last_name: String,
 }
