@@ -16,7 +16,6 @@ struct User {
     name: String,
     email: String,
     username: String,
-    password_hash: String,
     avatar: String,
 }
 
