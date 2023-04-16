@@ -6,6 +6,7 @@ use squadmaker_backend::{
     state::AppState,
     services::{
         user::{create_user, fetch_users},
+        player::{create_player, fetch_players},
     },
 };
 
@@ -24,6 +25,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(fetch_users)
             .service(create_user)
+            .service(fetch_players)
+            .service(create_player)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
