@@ -39,12 +39,12 @@ pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
 
 #[post("/users")]
 pub async fn create_user(state: Data<AppState>, body: Json<CreateUserBody>) -> impl Responder {
-    let res: Result<User, _> = query_as(include_str!("../../sql/create_user.sql"))
-        .bind(body.name.to_string())
-        .bind(body.email.to_string())
-        .bind(body.username.to_string())
-        .bind(body.password_hash.to_string())
-        .bind(body.avatar.to_string())
+    let res: Result<User, _> = query_as(include_str!("../../sql/services/user/create_user.sql"))
+        .bind(&body.name)
+        .bind(&body.email)
+        .bind(&body.username)
+        .bind(&body.password_hash)
+        .bind(&body.avatar)
         .fetch_one(&state.db)
         .await;
     match res {
