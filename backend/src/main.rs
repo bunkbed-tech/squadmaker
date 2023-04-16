@@ -1,13 +1,13 @@
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use sqlx::{postgres::PgPoolOptions};
 
-mod services;
-use services::user::{create_user, fetch_users};
-
-pub struct AppState {
-    db: Pool<Postgres>
-}
+use squadmaker_backend::{
+    state::AppState,
+    services::{
+        user::{create_user, fetch_users},
+    },
+};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

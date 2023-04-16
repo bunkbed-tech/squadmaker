@@ -6,7 +6,8 @@ use actix_web::{
 use serde::{Deserialize, Serialize};
 use sqlx::{query_as, FromRow};
 use time::OffsetDateTime;
-use crate::AppState;
+
+use crate::state::AppState;
 
 #[derive(Serialize, FromRow)]
 struct User {
