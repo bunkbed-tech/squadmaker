@@ -30,7 +30,7 @@ pub struct CreateUserBody {
 
 #[get("/users")]
 pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
-    let res: Result<Vec<User>, _> = query_as(include_str!("../sql/fetch_users.sql")).fetch_all(&state.db).await;
+    let res: Result<Vec<User>, _> = query_as(include_str!("../../sql/fetch_users.sql")).fetch_all(&state.db).await;
     match res {
         Ok(users) => HttpResponse::Ok().json(users),
         Err(_) => HttpResponse::NotFound().json("No users found"),
@@ -39,7 +39,7 @@ pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
 
 #[post("/users")]
 pub async fn create_user(state: Data<AppState>, body: Json<CreateUserBody>) -> impl Responder {
-    let res: Result<User, _> = query_as(include_str!("../sql/create_user.sql"))
+    let res: Result<User, _> = query_as(include_str!("../../sql/create_user.sql"))
         .bind(body.name.to_string())
         .bind(body.email.to_string())
         .bind(body.username.to_string())

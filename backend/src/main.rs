@@ -3,7 +3,7 @@ use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 mod services;
-use services::{create_user, fetch_users};
+use services::user::{create_user, fetch_users};
 
 pub struct AppState {
     db: Pool<Postgres>
