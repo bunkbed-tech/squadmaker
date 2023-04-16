@@ -1,3 +1,5 @@
+use std::env::var;
+
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions};
@@ -13,7 +15,7 @@ use squadmaker_backend::{
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let database_url = var("DATABASE_URL").expect("DATABASE_URL must be set in .env");
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
