@@ -52,8 +52,8 @@ pub async fn fetch_players(state: Data<AppState>) -> impl Responder {
 #[post("/players")]
 pub async fn create_player(state: Data<AppState>, body: Json<CreatePlayerBody>) -> impl Responder {
     let res: Result<Player, _> = query_as(include_str!("../../sql/services/player/create_player.sql"))
-        .bind(body.name.to_string())
-        .bind(Gender::from_str(&body.gender.to_string()).unwrap())
+        .bind(&body.name)
+        .bind(Gender::from_str(&body.gender).unwrap())
         .bind(&body.phone)
         .bind(&body.email)
         .bind(&body.pronouns)
