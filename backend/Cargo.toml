@@ -13,3 +13,5 @@ time = "0.3.20"
 serde_with = { version = "2.0.0", features = ["time_0_3"] }
 strum = "0.24.1"
 strum_macros = "0.24.3"
+bytes = "1.4.0"
+actix-service = "2.0.2"

@@ -1961,7 +1961,9 @@ dependencies = [
 name = "squadmaker-backend"
 version = "0.0.1"
 dependencies = [
+ "actix-service",
  "actix-web",
+ "bytes",
  "dotenv",
  "serde",
  "serde_json",
