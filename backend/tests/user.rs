@@ -2,7 +2,6 @@
 use actix_web::{test, web, App, HttpResponse, http::StatusCode, http::header::ContentType};
 use bytes::Bytes;
 use serde::{Serialize, Deserialize};
-use actix_service::Service;
 
 #[derive(Serialize, Deserialize)]
 pub struct Person {
