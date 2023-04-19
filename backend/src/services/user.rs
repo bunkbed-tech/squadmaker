@@ -19,7 +19,7 @@ pub struct User {
     pub avatar: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreateUserBody {
     pub name: String,
     pub email: String,
