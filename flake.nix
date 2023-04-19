@@ -22,8 +22,10 @@
         program = toString (pkgs.writers.writeBash command script);
       };
     in
-    {
-      apps.default = mkApp "run" (builtins.readFile ./backend/scripts/run.sh);
+    rec {
+      apps.run = mkApp "run" (builtins.readFile ./backend/scripts/run.sh);
+      apps.test = mkApp "test" (builtins.readFile ./backend/scripts/test.sh);
+      apps.default = apps.test;
       packages.default = fenix-flake.packages.default.toolchain;
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
