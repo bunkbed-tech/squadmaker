@@ -32,6 +32,7 @@ async fn test_fetch_users_is_ok_but_empty() {
     assert_eq!(result, Bytes::from_static(b"[]"))
 }
 
+// TODO: make tests independent of each other so data is fresh in the database
 #[actix_web::test]
 async fn test_create_user_is_ok_and_filled() {
     let app = test::init_service(
