@@ -9,14 +9,14 @@ use time::OffsetDateTime;
 
 use crate::state::AppState;
 
-#[derive(Serialize, FromRow)]
-struct User {
-    id: i32,
-    created_at: OffsetDateTime,
-    name: String,
-    email: String,
-    username: String,
-    avatar: String,
+#[derive(Serialize, FromRow, Deserialize)]
+pub struct User {
+    pub id: i32,
+    pub created_at: OffsetDateTime,
+    pub name: String,
+    pub email: String,
+    pub username: String,
+    pub avatar: String,
 }
 
 #[derive(Deserialize)]
