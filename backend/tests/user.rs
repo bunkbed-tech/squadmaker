@@ -1,133 +1,123 @@
-//use squadmaker_backend::services::{fetch_users};
-use actix_web::{test, web, App, HttpResponse, http::StatusCode, http::header::ContentType};
+use squadmaker_backend::services::{fetch_users, create_user, User, CreateUserBody};
+use squadmaker_backend::state::AppState;
+use actix_web::{test, web, App, http::StatusCode, http::header::ContentType};
 use bytes::Bytes;
-use serde::{Serialize, Deserialize};
+use dotenv::dotenv;
+use sqlx::{postgres::PgPoolOptions};
+use std::env::var;
 
-#[derive(Serialize, Deserialize)]
-pub struct Person {
-    id: String,
-    name: String
+async fn get_pool() -> sqlx::PgPool {
+    dotenv().ok();
+    let database_url = var("DATABASE_URL").expect("DATABASE_URL must be set in .env");
+    PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("Error building a connection pool")
 }
 
-// Example
 #[actix_web::test]
-async fn test_init_service() {
+async fn test_fetch_users_is_ok_but_empty() {
     let app = test::init_service(
         App::new()
-            .service(web::resource("/test").to(|| async { "OK" }))
+            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .service(fetch_users)
     ).await;
+    let request = test::TestRequest::with_uri("/users").to_request();
+    let response = test::call_service(&app, request).await;
 
-    // Create request object
-    let req = test::TestRequest::with_uri("/test").to_request();
+    assert_eq!(response.status(), StatusCode::OK);
 
-    // Execute application
-    let res = app.call(req).await.unwrap();
-    assert_eq!(res.status(), StatusCode::OK);
+    let result = test::read_body(response).await;
+    assert_eq!(result, Bytes::from_static(b"[]"))
 }
 
 #[actix_web::test]
-async fn test_add_person() {
-    let mut app = test::init_service(
-        App::new().service(
-            web::resource("/people")
-                .route(web::post().to(|person: web::Json<Person>| async {
-                    HttpResponse::Ok()
-                        .json(person)})
-                    ))
+async fn test_create_user_is_ok_and_filled() {
+    let app = test::init_service(
+        App::new()
+            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .service(create_user)
     ).await;
+    let payload = CreateUserBody {
+        name: String::from("Joe"),
+        email: String::from("joe@joe.joe"),
+        username: String::from("j03"),
+        password_hash: String::from("password"),
+        avatar: String::from("jo@starbucks.jpg"),
+    };
+    let request = test::TestRequest::post()
+        .uri("/users")
+        .insert_header(ContentType::json())
+        .set_json(&payload)
+        .to_request();
+    let response = test::call_service(&app, request).await;
 
-    let payload = r#"{"id":"12345","name":"User name"}"#.as_bytes();
+    assert_eq!(response.status(), StatusCode::OK);
 
-    let req = test::TestRequest::post()
-        .uri("/people")
+    let user: User = test::read_body_json(response).await;
+//  assert_eq!(user.id, 1);
+    assert_eq!(user.name, payload.name);
+    assert_eq!(user.email, payload.email);
+    assert_eq!(user.username, payload.username);
+    assert_eq!(user.avatar, payload.avatar);
+}
+
+#[actix_web::test]
+async fn test_create_user_fails_without_required_field() {
+    let app = test::init_service(
+        App::new()
+            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .service(create_user)
+    ).await;
+    let payload = r#"{
+        "email": "joe@joe.joe",
+        "username": "j03",
+        "password_hash": "password",
+        "avatar": "jo@starbucks.jpg"
+    }"#.as_bytes();
+    let request = test::TestRequest::post()
+        .uri("/users")
         .insert_header(ContentType::json())
         .set_payload(payload)
         .to_request();
+    let response = test::call_service(&app, request).await;
 
-    let result: Person = test::call_and_read_body_json(&mut app, req).await;
-    assert_eq!(result.id, "12345")
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+    let error = test::read_body(response).await;
+    assert!(error.starts_with(b"Json deserialize error: missing field `name`"))
 }
 
-// Example
+// TODO: this test should eventually fail because people should be told that extra fields are wrong
 #[actix_web::test]
-async fn test_response() {
+async fn test_create_user_succeeds_with_extra_field() {
     let app = test::init_service(
         App::new()
-            .service(web::resource("/test").to(|| async {
-                HttpResponse::Ok()
-            }))
+            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .service(create_user)
     ).await;
-
-    // Create request object
-    let req = test::TestRequest::with_uri("/test").to_request();
-
-    // Call application
-    let res = test::call_service(&app, req).await;
-    assert_eq!(res.status(), StatusCode::OK);
-}
-
-// Example
-#[actix_web::test]
-async fn test_index() {
-    let app = test::init_service(
-        App::new().service(
-            web::resource("/index.html")
-                .route(web::post().to(|| async {
-                    HttpResponse::Ok().body("welcome!")
-                })))
-    ).await;
-
-    let req = test::TestRequest::post()
-        .uri("/index.html")
-        .insert_header(ContentType::json())
-        .to_request();
-
-    let result = test::call_and_read_body(&app, req).await;
-    assert_eq!(result, Bytes::from_static(b"welcome!"));
-}
-
-#[actix_web::test]
-async fn test_index2() {
-    let app = test::init_service(
-        App::new().service(
-            web::resource("/index.html")
-                .route(web::post().to(|| async {
-                    HttpResponse::Ok().body("welcome!")
-                })))
-    ).await;
-
-    let req = test::TestRequest::post()
-        .uri("/index.html")
-        .insert_header(ContentType::json())
-        .to_request();
-
-    let res = test::call_service(&app, req).await;
-    let result = test::read_body(res).await;
-    assert_eq!(result, Bytes::from_static(b"welcome!"));
-}
-
-#[actix_web::test]
-async fn test_post_person() {
-    let mut app = test::init_service(
-        App::new().service(
-            web::resource("/people")
-                .route(web::post().to(|person: web::Json<Person>| async {
-                    HttpResponse::Ok()
-                        .json(person)})
-                    ))
-    ).await;
-
-    let payload = r#"{"id":"12345","name":"User name"}"#.as_bytes();
-
-    let res = test::TestRequest::post()
-        .uri("/people")
+    let payload = r#"{
+        "name": "joe",
+        "email": "joe@joe.joe",
+        "username": "j03",
+        "password_hash": "password",
+        "avatar": "jo@starbucks.jpg",
+        "abcd": 0
+    }"#.as_bytes();
+    let request = test::TestRequest::post()
+        .uri("/users")
         .insert_header(ContentType::json())
         .set_payload(payload)
-        .send_request(&mut app)
-        .await;
+        .to_request();
+    let response = test::call_service(&app, request).await;
 
-    assert!(res.status().is_success());
+    assert_eq!(response.status(), StatusCode::OK);
 
-    let result: Person = test::read_body_json(res).await;
-    assert_eq!(result.id, "12345");
+    let user: User = test::read_body_json(response).await;
+//  assert_eq!(user.id, 1);
+    assert_eq!(user.name, "joe");
+    assert_eq!(user.email, "joe@joe.joe");
+    assert_eq!(user.username, "j03");
+    assert_eq!(user.avatar, "jo@starbucks.jpg");
 }
