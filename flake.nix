@@ -24,6 +24,7 @@
     in
     rec {
       apps.test = mkApp "test" (builtins.readFile ./backend/scripts/test.sh);
+      apps.default = apps.test;
       packages.default = fenix-flake.packages.default.toolchain;
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
