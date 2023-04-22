@@ -13,16 +13,16 @@ mkdir -p "$PGLOGS"
 pg_ctl -D "$PGDATA" -l "$PGLOGS/$(date +"%Y%m%d")" start
 
 # Create model tables
-psql -f sql/models/enums.sql postgres
-psql -f sql/models/user.sql postgres
-psql -f sql/models/player.sql postgres
-psql -f sql/models/trophy.sql postgres
-psql -f sql/models/score_type.sql postgres
-psql -f sql/models/league.sql postgres
-psql -f sql/models/game.sql postgres
-psql -f sql/models/payment.sql postgres
-psql -f sql/models/score.sql postgres
-psql -f sql/models/attendance.sql postgres
+psql -f migrations/models/enums.sql postgres
+psql -f migrations/models/user.sql postgres
+psql -f migrations/models/player.sql postgres
+psql -f migrations/models/trophy.sql postgres
+psql -f migrations/models/score_type.sql postgres
+psql -f migrations/models/league.sql postgres
+psql -f migrations/models/game.sql postgres
+psql -f migrations/models/payment.sql postgres
+psql -f migrations/models/score.sql postgres
+psql -f migrations/models/attendance.sql postgres
 
 # Start app server
 cargo test

@@ -39,7 +39,7 @@ pub async fn fetch_users(state: Data<AppState>) -> impl Responder {
 
 #[post("/users")]
 pub async fn create_user(state: Data<AppState>, body: Json<CreateUserBody>) -> impl Responder {
-    let res: Result<User, _> = query_as(include_str!("../../sql/services/user/create_user.sql"))
+    let res: Result<User, _> = query_as(include_str!("../../migrations/services/user/create_user.sql"))
         .bind(&body.name)
         .bind(&body.email)
         .bind(&body.username)
