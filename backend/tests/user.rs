@@ -16,6 +16,18 @@ async fn get_pool() -> sqlx::PgPool {
         .expect("Error building a connection pool")
 }
 
+#[sqlx::test]
+async fn test_sqlx(pool: sqlx::PgPool) -> sqlx::Result<()> {
+    dotenv().ok();
+    let mut conn = pool.acquire().await?;
+
+    sqlx::query("SELECT * FROM foo")
+        .fetch_one(&mut conn)
+        .await?;
+    
+    Ok(())
+}
+
 #[actix_web::test]
 async fn test_fetch_users_is_ok_but_empty() {
     let app = test::init_service(

@@ -23,9 +23,7 @@
       };
     in
     rec {
-      apps.run = mkApp "run" (builtins.readFile ./backend/scripts/run.sh);
       apps.test = mkApp "test" (builtins.readFile ./backend/scripts/test.sh);
-      apps.default = apps.test;
       packages.default = fenix-flake.packages.default.toolchain;
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
@@ -40,7 +38,7 @@
             "rustfmt"
           ])
           rust-analyzer-nightly
-          postgresql
+          #docker-compose
         ];
       };
     }

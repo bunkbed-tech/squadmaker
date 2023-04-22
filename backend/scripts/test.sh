@@ -1,34 +1,17 @@
 #!/usr/bin/env bash
-PGDATA="$(pwd)/data/postgresql"
-PGLOGS="$(pwd)/logs/postgresql"
 
-# Create data and logging folders
-mkdir -p "$PGDATA"
-mkdir -p "$PGLOGS"
-
-# Initialize database
-[[ -d "$PGDATA" && ! $(ls -A "$PGDATA") ]] && initdb -D "$PGDATA"
-
-# Start database server
-pg_ctl -D "$PGDATA" -l "$PGLOGS/$(date +"%Y%m%d")" start
-
-# Create model tables
-psql -f migrations/models/enums.sql postgres
-psql -f migrations/models/user.sql postgres
-psql -f migrations/models/player.sql postgres
-psql -f migrations/models/trophy.sql postgres
-psql -f migrations/models/score_type.sql postgres
-psql -f migrations/models/league.sql postgres
-psql -f migrations/models/game.sql postgres
-psql -f migrations/models/payment.sql postgres
-psql -f migrations/models/score.sql postgres
-psql -f migrations/models/attendance.sql postgres
-
-# Start app server
+docker-compose up -d db
+export $(cat .env | xargs)
 cargo test
 
-# Stop database server
-pg_ctl -D "$PGDATA" stop
-
-# Delete data
-rm -rf "$PGDATA"
+# Create model tables
+# psql -f migrations/models/1-enums.sql postgres
+# psql -f migrations/models/2-user.sql postgres
+# psql -f migrations/models/3-player.sql postgres
+# psql -f migrations/models/4-trophy.sql postgres
+# psql -f migrations/models/5-score_type.sql postgres
+# psql -f migrations/models/6-league.sql postgres
+# psql -f migrations/models/7-game.sql postgres
+# psql -f migrations/models/8-payment.sql postgres
+# psql -f migrations/models/9-score.sql postgres
+# psql -f migrations/models/10-attendance.sql postgres
