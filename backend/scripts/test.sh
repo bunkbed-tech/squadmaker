@@ -2,6 +2,7 @@
 
 docker-compose up -d db
 export $(cat .env | xargs)
+sleep 10
 cargo test
 
 # Create model tables
