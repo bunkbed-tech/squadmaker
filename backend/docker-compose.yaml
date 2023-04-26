@@ -13,13 +13,20 @@ services:
     ports:
       - 5432:5432
   tests:
-    image: rust:latest
+    build:
+      context: .
+      target: test
     container_name: testing
     working_dir: /app
-    command: cargo test
     env_file: .env
     depends_on:
       - db
     volumes:
       - .:/app
+     # - ./src:/app/src 
+     # - ./migrations:/app/migrations
+     # - ./tests:/app/tests
+     # - ./.env:/app/.env
+     # - ./Cargo.lock:/app/Cargo.lock
+     # - ./Cargo.toml:/app/Cargo.toml
 
