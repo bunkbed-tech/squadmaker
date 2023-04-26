@@ -6,6 +6,7 @@ use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions};
 use std::env::var;
 
+#[allow(dead_code)]
 async fn get_pool() -> sqlx::PgPool {
     dotenv().ok();
     let database_url = var("DATABASE_URL").expect("DATABASE_URL must be set in .env");
@@ -17,22 +18,21 @@ async fn get_pool() -> sqlx::PgPool {
 }
 
 #[sqlx::test]
-async fn test_sqlx(pool: sqlx::PgPool) -> sqlx::Result<()> {
-    dotenv().ok();
+async fn test_user_table_exists(pool: sqlx::PgPool) -> sqlx::Result<()> {
     let mut conn = pool.acquire().await?;
 
-    sqlx::query("SELECT * FROM foo")
+    sqlx::query("SELECT * FROM user")
         .fetch_one(&mut conn)
         .await?;
     
     Ok(())
 }
 
-#[actix_web::test]
-async fn test_fetch_users_is_ok_but_empty() {
+#[sqlx::test]
+async fn test_fetch_users_is_ok_but_empty(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .app_data(web::Data::new(AppState { db: pool}))
             .service(fetch_users)
     ).await;
     let request = test::TestRequest::with_uri("/users").to_request();
@@ -44,12 +44,11 @@ async fn test_fetch_users_is_ok_but_empty() {
     assert_eq!(result, Bytes::from_static(b"[]"))
 }
 
-// TODO: make tests independent of each other so data is fresh in the database
-#[actix_web::test]
-async fn test_create_user_is_ok_and_filled() {
+#[sqlx::test]
+async fn test_create_user_is_ok_and_filled(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .app_data(web::Data::new(AppState { db: pool}))
             .service(create_user)
     ).await;
     let payload = CreateUserBody {
@@ -76,11 +75,11 @@ async fn test_create_user_is_ok_and_filled() {
     assert_eq!(user.avatar, payload.avatar);
 }
 
-#[actix_web::test]
-async fn test_create_user_fails_without_required_field() {
+#[sqlx::test]
+async fn test_create_user_fails_without_required_field(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .app_data(web::Data::new(AppState { db: pool }))
             .service(create_user)
     ).await;
     let payload = r#"{
@@ -103,11 +102,11 @@ async fn test_create_user_fails_without_required_field() {
 }
 
 // TODO: this test should eventually fail because people should be told that extra fields are wrong
-#[actix_web::test]
-async fn test_create_user_succeeds_with_extra_field() {
+#[sqlx::test]
+async fn test_create_user_succeeds_with_extra_field(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: get_pool().await.clone() }))
+            .app_data(web::Data::new(AppState { db: pool }))
             .service(create_user)
     ).await;
     let payload = r#"{
