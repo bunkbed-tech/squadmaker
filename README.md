@@ -3,4 +3,4 @@ A sports-themed app that helps team captains build and organize their squad rost
 
 ## Testing
 
-Run `nix run` from the `./backend` folder to run all of the tests in development.
+Run `docker-compose up --build` from `./backend` to run all of the tests in development.
