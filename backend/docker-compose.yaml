@@ -21,12 +21,3 @@ services:
     env_file: .env
     depends_on:
       - db
-    volumes:
-      - .:/app
-     # - ./src:/app/src 
-     # - ./migrations:/app/migrations
-     # - ./tests:/app/tests
-     # - ./.env:/app/.env
-     # - ./Cargo.lock:/app/Cargo.lock
-     # - ./Cargo.toml:/app/Cargo.toml
-
