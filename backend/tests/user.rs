@@ -2,20 +2,6 @@ use squadmaker_backend::services::{fetch_users, create_user, User, CreateUserBod
 use squadmaker_backend::state::AppState;
 use actix_web::{test, web, App, http::StatusCode, http::header::ContentType};
 use bytes::Bytes;
-use dotenv::dotenv;
-use sqlx::{postgres::PgPoolOptions};
-use std::env::var;
-
-#[allow(dead_code)]
-async fn get_pool() -> sqlx::PgPool {
-    dotenv().ok();
-    let database_url = var("DATABASE_URL").expect("DATABASE_URL must be set in .env");
-    PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
-        .expect("Error building a connection pool")
-}
 
 #[sqlx::test]
 async fn test_user_table_exists(pool: sqlx::PgPool) -> sqlx::Result<()> {
@@ -32,7 +18,7 @@ async fn test_user_table_exists(pool: sqlx::PgPool) -> sqlx::Result<()> {
 async fn test_fetch_users_is_ok_but_empty(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: pool}))
+            .app_data(web::Data::new(AppState { db: pool }))
             .service(fetch_users)
     ).await;
     let request = test::TestRequest::with_uri("/users").to_request();
@@ -48,7 +34,7 @@ async fn test_fetch_users_is_ok_but_empty(pool: sqlx::PgPool) {
 async fn test_create_user_is_ok_and_filled(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
-            .app_data(web::Data::new(AppState { db: pool}))
+            .app_data(web::Data::new(AppState { db: pool }))
             .service(create_user)
     ).await;
     let payload = CreateUserBody {
@@ -68,7 +54,7 @@ async fn test_create_user_is_ok_and_filled(pool: sqlx::PgPool) {
     assert_eq!(response.status(), StatusCode::OK);
 
     let user: User = test::read_body_json(response).await;
-//  assert_eq!(user.id, 1);
+    assert_eq!(user.id, 1);
     assert_eq!(user.name, payload.name);
     assert_eq!(user.email, payload.email);
     assert_eq!(user.username, payload.username);
@@ -127,7 +113,7 @@ async fn test_create_user_succeeds_with_extra_field(pool: sqlx::PgPool) {
     assert_eq!(response.status(), StatusCode::OK);
 
     let user: User = test::read_body_json(response).await;
-//  assert_eq!(user.id, 1);
+    assert_eq!(user.id, 1);
     assert_eq!(user.name, "joe");
     assert_eq!(user.email, "joe@joe.joe");
     assert_eq!(user.username, "j03");
