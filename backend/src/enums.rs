@@ -12,6 +12,9 @@ pub enum ScoreName {
     Run,
 }
 
+#[derive(Debug, Type, EnumString, Serialize, Deserialize, PartialEq)]
+#[sqlx(type_name = "trophy_type", rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum TrophyType {
     PerfectAttendance,
     HighScoreGame,
