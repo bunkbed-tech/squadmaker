@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use actix_web::{
     get, post,
-    web::{Data, Json},
+    web::{Data, Json, Path},
     Responder, HttpResponse
 };
 use serde::{Deserialize, Serialize};
@@ -46,6 +46,19 @@ pub async fn fetch_players(state: Data<AppState>) -> impl Responder {
     match res {
         Ok(players) => HttpResponse::Ok().json(players),
         Err(_) => HttpResponse::NotFound().json("No players found"),
+    }
+}
+
+#[get("/players/{id}")]
+pub async fn fetch_player(state: Data<AppState>, path: Path<i32>) -> impl Responder {
+    let id = path.into_inner();
+    let res: Result<Player, _> = query_as("SELECT * FROM player WHERE id = $1")
+        .bind(id)
+        .fetch_one(&state.db)
+        .await;
+    match res {
+        Ok(player) => HttpResponse::Ok().json(player),
+        Err(_) => HttpResponse::NotFound().json("Player not found"),
     }
 }
 

@@ -1,4 +1,4 @@
-use squadmaker_backend::services::{fetch_players, create_player, Player, CreatePlayerBody};
+use squadmaker_backend::services::{fetch_players, fetch_player, create_player, Player, CreatePlayerBody};
 use squadmaker_backend::state::AppState;
 use squadmaker_backend::enums::Gender;
 use actix_web::{test, web, App, http::StatusCode, http::header::ContentType};
@@ -18,6 +18,31 @@ async fn test_fetch_players_is_ok_but_empty(pool: sqlx::PgPool) {
 
     let result = test::read_body(response).await;
     assert_eq!(result, Bytes::from_static(b"[]"))
+}
+
+#[sqlx::test(fixtures("players"))]
+async fn test_fetch_player_is_filled(pool: sqlx::PgPool) {
+    let app = test::init_service(
+        App::new()
+            .app_data(web::Data::new(AppState { db: pool }))
+            .service(fetch_player)
+    ).await;
+    let player_id = 1;
+    let request = test::TestRequest::with_uri(&format!("/players/{player_id}")).to_request();
+    let response = test::call_service(&app, request).await;
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let player: Player = test::read_body_json(response).await;
+    assert_eq!(player.id, 1);
+    assert_eq!(player.name, String::from("joe"));
+    assert_eq!(player.gender, Gender::Man);
+    assert_eq!(player.phone, String::from("+11234567890"));
+    assert_eq!(player.email, String::from("joe@joe.joe"));
+    assert_eq!(player.pronouns, Some(String::from("he/him/his")));
+    assert_eq!(player.birthday, Some(String::from("01/01/0001")));
+    assert_eq!(player.photo, Some(String::from("joe@starbucks.jpg")));
+    assert_eq!(player.place_from, Some(String::from("bethlehem")));
 }
 
 #[sqlx::test]
