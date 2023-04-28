@@ -11,24 +11,24 @@ use time::OffsetDateTime;
 
 use crate::{state::AppState, enums::Gender};
 
-#[derive(Serialize, FromRow)]
-struct Player {
-    id: i32,
-    created_at: OffsetDateTime,
-    name: String,
-    gender: Gender,
-    pronouns: Option<String>,
-    birthday: Option<String>,
-    phone: String,
-    email: String,
-    place_from: Option<String>,
-    photo: Option<String>,
-    score_all_time: i32,
-    score_avg_per_game: Option<f32>,
-    games_attended: i32,
+#[derive(Serialize, FromRow, Deserialize)]
+pub struct Player {
+    pub id: i32,
+    pub created_at: OffsetDateTime,
+    pub name: String,
+    pub gender: Gender,
+    pub pronouns: Option<String>,
+    pub birthday: Option<String>,
+    pub phone: String,
+    pub email: String,
+    pub place_from: Option<String>,
+    pub photo: Option<String>,
+    pub score_all_time: i32,
+    pub score_avg_per_game: Option<f32>,
+    pub games_attended: i32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreatePlayerBody {
     pub name: String,
     pub gender: String,

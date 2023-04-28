@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use sqlx::Type;
 use strum_macros::EnumString;
 
@@ -19,7 +19,7 @@ pub enum TrophyType {
     HatTrick,
 }
 
-#[derive(Debug, Type, EnumString, Serialize)]
+#[derive(Debug, Type, EnumString, Serialize, Deserialize, PartialEq)]
 #[sqlx(type_name = "gender", rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum Gender {
