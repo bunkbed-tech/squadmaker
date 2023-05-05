@@ -9,6 +9,7 @@ use squadmaker_backend::{
     services::{
         user::{create_user, fetch_users},
         player::{create_player, fetch_players},
+        score_type::fetch_score_types,
     },
 };
 
@@ -29,6 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(create_user)
             .service(fetch_players)
             .service(create_player)
+            .service(fetch_score_types)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
