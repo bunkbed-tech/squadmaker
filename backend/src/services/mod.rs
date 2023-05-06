@@ -6,3 +6,5 @@ pub mod trophy;
 pub use trophy::*;
 pub mod score_type;
 pub use score_type::*;
+pub mod league;
+pub use league::*;
