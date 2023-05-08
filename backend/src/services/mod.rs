@@ -8,3 +8,5 @@ pub mod score_type;
 pub use score_type::*;
 pub mod league;
 pub use league::*;
+pub use game::*;
+pub mod game;
