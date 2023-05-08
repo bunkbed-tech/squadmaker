@@ -5,17 +5,18 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{query_as, FromRow};
-//use time::{OffsetDateTime, macros::format_description};
-use time::OffsetDateTime;
+use time::{OffsetDateTime, serde::iso8601};
 
 use crate::{state::AppState};
 
 #[derive(Serialize, FromRow, Deserialize)]
 pub struct Game {
     pub id: i32,
+    #[serde(with = "iso8601")]
     pub created_at: OffsetDateTime,
     pub opponent_name: String,
     pub game_location: String,
+    #[serde(with = "iso8601")]
     pub start_datetime: OffsetDateTime,
     pub league_id: i32,
     pub your_score: i32,
@@ -27,7 +28,7 @@ pub struct Game {
 pub struct CreateGameBody {
     pub opponent_name: String,
     pub game_location: String,
-    //pub start_datetime: String,
+    #[serde(with = "iso8601")]
     pub start_datetime: OffsetDateTime,
 }
 
@@ -47,16 +48,14 @@ pub async fn fetch_leagues_games(state: Data<AppState>, path: Path<i32>) -> impl
 #[post("/leagues/{league_id}/games")]
 pub async fn create_game(state: Data<AppState>, body: Json<CreateGameBody>, path: Path<i32>) -> impl Responder {
     let league_id = path.into_inner();
-    //let format = format_description!(
-    //    "[year]-[month]-[day] [hour]:[minute]:[second] [offset_hour \
-    //         sign:mandatory]:[offset_minute]:[offset_second]"
-    //);
-    //let start_datetime = OffsetDateTime::parse(&body.start_datetime, &format).map_err( |e| HttpResponse::InternalServerError().json(e) );
+
+    // TODO: Something is currently wrong where start_datetime as bytes isn't deserializing in OffsetDateTime when building a TestRequest
+    // and binding it to set_json. We shouldnt need to parse both OffsetDatTime objects AND bytes/strings in this service. Because they
+    // both implement Serialize and Deserialize, they should both be handled by the crates we are importing.... right?
     let res: Result<Game, _> = query_as(include_str!("../../migrations/services/game/create_game.sql"))
         .bind(&body.opponent_name)
         .bind(&body.game_location)
         .bind(&body.start_datetime)
-        //.bind(OffsetDateTime::parse(&body.start_datetime, &format))
         .bind(league_id)
         .fetch_one(&state.db)
         .await;
