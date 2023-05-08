@@ -31,8 +31,9 @@ async fn test_fetch_leagues_games_is_filled(pool: sqlx::PgPool) {
     let response = test::call_service(&app, request).await;
 
     assert_eq!(response.status(), StatusCode::OK);
-    println!(response.body);
-    let game: Game = test::read_body_json(response).await;
+
+    let games: Vec<Game> = test::read_body_json(response).await;
+    let game = games.first().unwrap();
     assert_eq!(game.id, 1);
     assert_eq!(game.opponent_name, String::from("the bad guys"));
     assert_eq!(game.game_location, String::from("the ball field"));
@@ -144,7 +145,7 @@ async fn test_create_game_succeeds_with_extra_field(pool: sqlx::PgPool) {
     let response = test::call_service(&app, request).await;
 
     assert_eq!(response.status(), StatusCode::OK);
-    println!(response.body);
+
     let game: Game = test::read_body_json(response).await;
     assert_eq!(game.id, 1);
     assert_eq!(game.opponent_name, String::from("the bad guys"));
