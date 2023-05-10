@@ -55,7 +55,7 @@ pub async fn create_game(state: Data<AppState>, body: Json<CreateGameBody>, path
         .await;
     match res {
         Ok(game) => HttpResponse::Ok().json(game),
-        Err(err) => { println!("{}", err); HttpResponse::InternalServerError().json("Failed to create game") },
+        Err(_) => HttpResponse::InternalServerError().json("Failed to create game"),
     }
 }
 
