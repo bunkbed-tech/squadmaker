@@ -12,11 +12,9 @@ use crate::{state::AppState};
 #[derive(Serialize, FromRow, Deserialize)]
 pub struct Game {
     pub id: i32,
-    #[serde(with = "iso8601")]
     pub created_at: OffsetDateTime,
     pub opponent_name: String,
     pub game_location: String,
-    #[serde(with = "iso8601")]
     pub start_datetime: OffsetDateTime,
     pub league_id: i32,
     pub your_score: i32,
@@ -48,10 +46,6 @@ pub async fn fetch_leagues_games(state: Data<AppState>, path: Path<i32>) -> impl
 #[post("/leagues/{league_id}/games")]
 pub async fn create_game(state: Data<AppState>, body: Json<CreateGameBody>, path: Path<i32>) -> impl Responder {
     let league_id = path.into_inner();
-
-    // TODO: Something is currently wrong where start_datetime as bytes isn't deserializing in OffsetDateTime when building a TestRequest
-    // and binding it to set_json. We shouldnt need to parse both OffsetDatTime objects AND bytes/strings in this service. Because they
-    // both implement Serialize and Deserialize, they should both be handled by the crates we are importing.... right?
     let res: Result<Game, _> = query_as(include_str!("../../migrations/services/game/create_game.sql"))
         .bind(&body.opponent_name)
         .bind(&body.game_location)
@@ -61,7 +55,7 @@ pub async fn create_game(state: Data<AppState>, body: Json<CreateGameBody>, path
         .await;
     match res {
         Ok(game) => HttpResponse::Ok().json(game),
-        Err(_) => HttpResponse::InternalServerError().json("Failed to create game"),
+        Err(err) => { println!("{}", err); HttpResponse::InternalServerError().json("Failed to create game") },
     }
 }
 

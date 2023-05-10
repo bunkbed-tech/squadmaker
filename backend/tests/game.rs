@@ -134,16 +134,15 @@ async fn test_create_game_succeeds_with_extra_field(pool: sqlx::PgPool) {
     let payload = r#"{
         "opponent_name": "the bad guys",
         "game_location": "the ball field",
-        "start_datetime": "2022-05-06T14:30 UTC+02:00",
+        "start_datetime": "2022-05-06T14:30+02:00",
         "abcd": 1
-    }"#.as_bytes(); // TODO: why is start_datetime not deserializing into a OffsetDateTime?
+    }"#.as_bytes();
     let request = test::TestRequest::post()
         .uri("/leagues/1/games")
         .insert_header(ContentType::json())
-        .set_json(payload)
+        .set_payload(payload)
         .to_request();
     let response = test::call_service(&app, request).await;
-    println!("{}", "i am a debug point");
     assert_eq!(response.status(), StatusCode::OK);
 
     let game: Game = test::read_body_json(response).await;
