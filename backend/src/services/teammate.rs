@@ -13,8 +13,8 @@ use crate::{state::AppState};
 pub struct Teammate {
     pub id: i32,
     pub created_at: OffsetDateTime,
-    pub player_id: i32,
     pub league_id: i32,
+    pub player_id: i32,
     pub paid: bool,
 }
 
