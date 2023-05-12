@@ -1,6 +1,6 @@
 use actix_web::{
     get, post,
-    web::{Data, Path},
+    web::{Data, Json, Path},
     Responder, HttpResponse
 };
 use serde::{Deserialize, Serialize};
@@ -18,6 +18,12 @@ pub struct Teammate {
     pub paid: bool,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct CreateTeammateBody {
+    pub player_id: i32,
+    pub paid: Option<bool>,
+}
+
 #[get("/leagues/{league_id}/teammates")]
 pub async fn fetch_leagues_teammates(state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let league_id = path.into_inner();
@@ -31,13 +37,13 @@ pub async fn fetch_leagues_teammates(state: Data<AppState>, path: Path<i32>) -> 
     }
 }
 
-#[post("/leagues/{league_id}/teammates/players/{player_id}")]
-pub async fn create_teammate(state: Data<AppState>, path: Path<(i32, i32)>) -> impl Responder {
-    let (league_id, player_id) = path.into_inner();
+#[post("/leagues/{league_id}/teammates")]
+pub async fn create_teammate(state: Data<AppState>, path: Path<i32>, body: Json<CreateTeammateBody>) -> impl Responder {
+    let league_id = path.into_inner();
     let res: Result<Teammate, _> = query_as(include_str!("../../migrations/services/teammate/create_teammate.sql"))
         .bind(league_id)
-        .bind(player_id)
-        .bind(true)
+        .bind(&body.player_id)
+        .bind(&body.paid.unwrap_or(false))
         .fetch_one(&state.db)
         .await;
     match res {
