@@ -10,5 +10,5 @@ pub mod league;
 pub use league::*;
 pub mod game;
 pub use game::*;
-pub mod payment;
-pub use payment::*;
+pub mod teammate;
+pub use teammate::*;
