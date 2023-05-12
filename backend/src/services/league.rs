@@ -18,6 +18,7 @@ pub struct League {
     pub name: String,
     pub team_name: String,
     pub sport: Sport,
+    pub cost: f32,
     pub captain_id: i32,
     pub games_won: i32,
     pub games_lost: i32,
@@ -29,6 +30,7 @@ pub struct CreateLeagueBody {
     pub name: String,
     pub team_name: String,
     pub sport: Sport,
+    pub cost: f32,
 }
 
 #[get("/users/{captain_id}/leagues")]
@@ -64,6 +66,7 @@ pub async fn create_league(state: Data<AppState>, path: Path<i32>, body: Json<Cr
         .bind(&body.name)
         .bind(&body.team_name)
         .bind(Sport::from_str(&body.sport.to_string()).unwrap())
+        .bind(&body.cost)
         .bind(captain_id)
         .fetch_one(&state.db)
         .await;

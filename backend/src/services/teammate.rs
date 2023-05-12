@@ -15,12 +15,13 @@ pub struct Teammate {
     pub created_at: OffsetDateTime,
     pub league_id: i32,
     pub player_id: i32,
-    pub paid: bool,
+    pub paid: Option<bool>,
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct CreateTeammateBody {
     pub player_id: i32,
+    // If paid is not specified in the request, the teammate is being added to a free league
     pub paid: Option<bool>,
 }
 
@@ -43,7 +44,7 @@ pub async fn create_teammate(state: Data<AppState>, path: Path<i32>, body: Json<
     let res: Result<Teammate, _> = query_as(include_str!("../../migrations/services/teammate/create_teammate.sql"))
         .bind(league_id)
         .bind(&body.player_id)
-        .bind(&body.paid.unwrap_or(false))
+        .bind(&body.paid)
         .fetch_one(&state.db)
         .await;
     match res {

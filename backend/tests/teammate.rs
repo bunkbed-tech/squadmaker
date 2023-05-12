@@ -4,7 +4,7 @@ use actix_web::{test, web, App, http::StatusCode, http::header::ContentType};
 use bytes::Bytes;
 
 #[sqlx::test(fixtures("users", "leagues"))]
-async fn test_fetch_leagues_teammates_is_ok_but_empty(pool: sqlx::PgPool) {
+async fn test_fetch_leagues_teammates_passes_if_empty(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(AppState { db: pool }))
@@ -20,7 +20,7 @@ async fn test_fetch_leagues_teammates_is_ok_but_empty(pool: sqlx::PgPool) {
 }
 
 #[sqlx::test(fixtures("users", "leagues", "players", "teammates"))]
-async fn test_fetch_leagues_teammates_is_filled(pool: sqlx::PgPool) {
+async fn test_fetch_leagues_teammates_passes(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(AppState { db: pool }))
@@ -36,11 +36,11 @@ async fn test_fetch_leagues_teammates_is_filled(pool: sqlx::PgPool) {
     assert_eq!(teammate.id, 1);
     assert_eq!(teammate.player_id, 1);
     assert_eq!(teammate.league_id, 1);
-    assert_eq!(teammate.paid, true);
+    assert_eq!(teammate.paid, Some(true));
 }
 
 #[sqlx::test(fixtures("users", "leagues", "players", "teammates"))]
-async fn test_fetch_teammate_is_filled(pool: sqlx::PgPool) {
+async fn test_fetch_teammate_passes(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(AppState { db: pool }))
@@ -55,11 +55,62 @@ async fn test_fetch_teammate_is_filled(pool: sqlx::PgPool) {
     assert_eq!(teammate.id, 1);
     assert_eq!(teammate.player_id, 1);
     assert_eq!(teammate.league_id, 1);
-    assert_eq!(teammate.paid, true);
+    assert_eq!(teammate.paid, Some(true));
 }
 
 #[sqlx::test(fixtures("users", "leagues", "players"))]
-async fn test_create_teammate_is_ok_and_filled_without_paid_specified(pool: sqlx::PgPool) {
+async fn test_create_teammate_fails_without_required_field(pool: sqlx::PgPool) {
+    let app = test::init_service(
+        App::new()
+            .app_data(web::Data::new(AppState { db: pool }))
+            .service(create_teammate)
+    ).await;
+    let payload = r#"{
+        "paid": true
+    }"#.as_bytes();
+    let request = test::TestRequest::post()
+        .uri("/leagues/1/teammates")
+        .insert_header(ContentType::json())
+        .set_payload(payload)
+        .to_request();
+    let response = test::call_service(&app, request).await;
+
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+    let error = test::read_body(response).await;
+    assert!(error.starts_with(b"Json deserialize error: missing field `player_id`"))
+}
+
+#[sqlx::test(fixtures("users", "leagues", "players"))]
+async fn test_create_teammate_passes_with_extra_field(pool: sqlx::PgPool) {
+    let app = test::init_service(
+        App::new()
+            .app_data(web::Data::new(AppState { db: pool }))
+            .service(create_teammate)
+    ).await;
+    let payload = r#"{
+        "player_id": 1,
+        "paid": false,
+        "abcd": 1
+    }"#.as_bytes();
+    let request = test::TestRequest::post()
+        .uri("/leagues/1/teammates")
+        .insert_header(ContentType::json())
+        .set_payload(payload)
+        .to_request();
+    let response = test::call_service(&app, request).await;
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let teammate: Teammate = test::read_body_json(response).await;
+    assert_eq!(teammate.id, 1);
+    assert_eq!(teammate.player_id, 1);
+    assert_eq!(teammate.league_id, 1);
+    assert_eq!(teammate.paid, Some(false));
+}
+
+#[sqlx::test(fixtures("users", "leagues", "players"))]
+async fn test_create_teammate_passes_for_free_league(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(AppState { db: pool }))
@@ -81,11 +132,11 @@ async fn test_create_teammate_is_ok_and_filled_without_paid_specified(pool: sqlx
     assert_eq!(teammate.id, 1);
     assert_eq!(teammate.player_id, 1);
     assert_eq!(teammate.league_id, 1);
-    assert_eq!(teammate.paid, false);
+    assert_eq!(teammate.paid, None);
 }
 
 #[sqlx::test(fixtures("users", "leagues", "players"))]
-async fn test_create_teammate_is_ok_and_filled_with_paid_specified(pool: sqlx::PgPool) {
+async fn test_create_teammate_passes_with_optionals(pool: sqlx::PgPool) {
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(AppState { db: pool }))
@@ -108,5 +159,5 @@ async fn test_create_teammate_is_ok_and_filled_with_paid_specified(pool: sqlx::P
     assert_eq!(teammate.id, 1);
     assert_eq!(teammate.player_id, 1);
     assert_eq!(teammate.league_id, 1);
-    assert_eq!(teammate.paid, true);
+    assert_eq!(teammate.paid, Some(true));
 }

@@ -4,5 +4,5 @@ CREATE TABLE teammate (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   league_id INT NOT NULL REFERENCES league (id),
   player_id INT NOT NULL REFERENCES player (id),
-  paid BOOLEAN NOT NULL
+  paid BOOLEAN
 );

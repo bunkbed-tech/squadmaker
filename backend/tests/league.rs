@@ -37,6 +37,7 @@ async fn test_fetch_league_is_filled(pool: sqlx::PgPool) {
     assert_eq!(league.name, String::from("the league"));
     assert_eq!(league.team_name, String::from("joezinhos"));
     assert_eq!(league.sport, Sport::kickball);
+    assert_eq!(league.cost, 420.69);
     assert_eq!(league.captain_id, 1);
     assert_eq!(league.games_won, 0);
     assert_eq!(league.games_lost, 0);
@@ -54,6 +55,7 @@ async fn test_create_league_is_ok_and_filled(pool: sqlx::PgPool) {
         name: String::from("the league"),
         team_name: String::from("joezinhos"),
         sport: Sport::kickball,
+        cost: 8008135.69,
     };
     let request = test::TestRequest::post()
         .uri("/users/1/leagues")
@@ -69,6 +71,7 @@ async fn test_create_league_is_ok_and_filled(pool: sqlx::PgPool) {
     assert_eq!(league.name, payload.name);
     assert_eq!(league.team_name, payload.team_name);
     assert_eq!(league.sport, payload.sport);
+    assert_eq!(league.cost, payload.cost);
     assert_eq!(league.captain_id, 1);
     assert_eq!(league.games_won, 0);
     assert_eq!(league.games_lost, 0);
@@ -84,7 +87,8 @@ async fn test_create_league_fails_without_required_field(pool: sqlx::PgPool) {
     ).await;
     let payload = r#"{
         "name": "the league",
-        "team_name": "joezinhos"
+        "team_name": "joezinhos",
+        "cost": 8008135.69
     }"#.as_bytes();
     let request = test::TestRequest::post()
         .uri("/users/1/leagues")
@@ -111,6 +115,7 @@ async fn test_create_league_succeeds_with_extra_field(pool: sqlx::PgPool) {
         "name": "the league",
         "team_name": "joezinhos",
         "sport": "kickball",
+        "cost": 8008135.69,
         "extra": 0
     }"#.as_bytes();
     let request = test::TestRequest::post()
@@ -127,6 +132,7 @@ async fn test_create_league_succeeds_with_extra_field(pool: sqlx::PgPool) {
     assert_eq!(league.name, String::from("the league"));
     assert_eq!(league.team_name, String::from("joezinhos"));
     assert_eq!(league.sport, Sport::kickball);
+    assert_eq!(league.cost, 8008135.69);
     assert_eq!(league.captain_id, 1);
     assert_eq!(league.games_won, 0);
     assert_eq!(league.games_lost, 0);
