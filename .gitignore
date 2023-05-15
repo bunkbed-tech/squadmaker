@@ -1,9 +1,6 @@
 # Ignore virtual environments
 .direnv/
 
-# Ignore the flutter SDK
-/flutter/
-
 # Miscellaneous
 .DS_Store
 /build/

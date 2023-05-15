@@ -29,7 +29,6 @@
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
         packages = with pkgs; [
-          #flutter # https://github.com/NixOS/nixpkgs/pull/210067
           nixpkgs-fmt
           (fenix.complete.withComponents [
             "cargo"
