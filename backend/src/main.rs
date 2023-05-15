@@ -13,6 +13,7 @@ use squadmaker_backend::{
         league::{create_league, fetch_league, fetch_leagues},
         game::{create_game, fetch_leagues_games, fetch_game},
         teammate::{create_teammate, fetch_leagues_teammates, fetch_teammate},
+        score::{fetch_game_scores, fetch_player_scores, fetch_league_scores, create_score}
     },
 };
 
@@ -43,6 +44,10 @@ async fn main() -> std::io::Result<()> {
             .service(create_teammate)
             .service(fetch_teammate)
             .service(fetch_leagues_teammates)
+            .service(fetch_game_scores)
+            .service(fetch_player_scores)
+            .service(fetch_league_scores)
+            .service(create_score)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

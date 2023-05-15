@@ -12,3 +12,5 @@ pub mod game;
 pub use game::*;
 pub mod teammate;
 pub use teammate::*;
+pub mod score;
+pub use score::*;
