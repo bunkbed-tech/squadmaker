@@ -38,7 +38,7 @@ pub async fn fetch_games_attendance(state: Data<AppState>, path: Path<i32>) -> i
 #[get("/teammates/{teammate_id}/attendance")]
 pub async fn fetch_teammates_attendance(state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let teammate_id = path.into_inner();
-    let res: Result<Vec<Attendance>, _> = query_as("SELECT * FROM score WHERE teammate_id = $1")
+    let res: Result<Vec<Attendance>, _> = query_as("SELECT * FROM attendance WHERE teammate_id = $1")
         .bind(teammate_id)
         .fetch_all(&state.db)
         .await;
