@@ -14,3 +14,5 @@ pub mod teammate;
 pub use teammate::*;
 pub mod score;
 pub use score::*;
+pub mod attendance;
+pub use attendance::*;
