@@ -30,6 +30,7 @@
         name = "${project}-shell";
         packages = with pkgs; [
           kotlin
+          openjdk11
           nixpkgs-fmt
           (fenix.complete.withComponents [
             "cargo"
