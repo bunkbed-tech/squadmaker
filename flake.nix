@@ -29,6 +29,7 @@
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
         packages = with pkgs; [
+          kotlin
           nixpkgs-fmt
           (fenix.complete.withComponents [
             "cargo"
