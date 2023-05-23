@@ -1,215 +1,136 @@
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
-data class Message(val author: String, val body: String)
-
-@OptIn(ExperimentalResourceApi::class)
+@ExperimentalLayoutApi
+@ExperimentalMaterial3Api
+@ExperimentalResourceApi
 @Composable
-fun MyApp() {
+fun App() {
+    var selectedPage by remember { mutableStateOf("Roster") }
     MyApplicationTheme {
-        var greetingText by remember { mutableStateOf("Hello, World!") }
-        var showImage by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = {
-                greetingText = "Hello, ${getPlatformName()}"
-                showImage = !showImage
-            }) {
-                Text(greetingText)
-            }
-            Text("Hello world!")
-            MessageCard(Message("Joe Schmo", "it's pretty cool to be Joe"))
-            Conversation(SampleData.conversationSample)
-            AnimatedVisibility(showImage) {
-                Image(
-                    painterResource("compose-multiplatform.xml"),
-                    null
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(selectedPage) },
                 )
+            },
+            bottomBar = {
+                NavigationBar {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Filled.Menu, contentDescription = "Sidebar") },
+                        selected = selectedPage == "Sidebar",
+                        onClick = { }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Filled.Person, contentDescription = "Roster") },
+                        label = { Text("Roster") },
+                        selected = selectedPage == "Roster",
+                        onClick = { selectedPage = "Roster" }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Filled.Favorite, contentDescription = "Games") },
+                        label = { Text("Games") },
+                        selected = selectedPage == "Games",
+                        onClick = { selectedPage = "Games" }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Filled.PlayArrow, contentDescription = "Play") },
+                        label = { Text("Play") },
+                        selected = selectedPage == "Play",
+                        onClick = { selectedPage = "Play" }
+                    )
+                }
+            },
+            floatingActionButtonPosition = FabPosition.End,
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    onClick = { /* fab click handler */ }
+                ) {
+                    Text("Inc")
+                }
+            },
+            content = { innerPadding ->
+                if (selectedPage == "Roster") {
+                    LazyColumn(
+                        // consume insets as scaffold doesn't do it by default
+                        modifier = Modifier.consumeWindowInsets(innerPadding),
+                        contentPadding = innerPadding
+                    ) {
+                        items(count = 100) {
+                            Card()
+                        }
+                    }
+                } else {
+                    Text("Nothing to see here")
+                }
             }
-        }
-    }
-}
-
-@Composable
-fun App(modifier: Modifier = Modifier) {
-
-    var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
-    MyApplicationTheme {
-        Surface(modifier) {
-            if (shouldShowOnboarding) {
-                OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
-            } else {
-                Greetings()
-            }
-        }
-    }
-}
-
-@Composable
-private fun Greeting(name: String) {
-
-    var expanded by remember { mutableStateOf(false) }
-
-    val extraPadding by animateDpAsState(
-        if (expanded) 48.dp else 0.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioHighBouncy,
-            stiffness = Spring.StiffnessVeryLow
         )
-    )
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-    ) {
-        Row(modifier = Modifier.padding(24.dp)) {
-            Column(modifier = Modifier
-                .weight(1f)
-                .padding(bottom = extraPadding.coerceAtLeast(0.dp))
-            ) {
-                Text(text = "Hello, ")
-                Text(text = name)
-            }
-            ElevatedButton(
-                onClick = { expanded = !expanded }
-            ) {
-                Text(if (expanded) "Show less" else "Show more")
-            }
-
-        }
     }
 }
 
+@ExperimentalMaterial3Api
+@ExperimentalResourceApi
 @Composable
-private fun Greetings(
-    modifier: Modifier = Modifier,
-    names: List<String> = List(1000) { "$it" }
-) {
-    LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
-        items(items = names) { name -> Greeting(name) }
-    }
-}
-
-@Composable
-fun OnboardingScreen(
-    onContinueClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+fun Card() {
+    ElevatedCard(
+        onClick = { /* Do something */ },
+        modifier = Modifier.fillMaxWidth().height(100.dp).padding(20.dp, 0.dp)
     ) {
-        Text("Welcome to the Basics Codelab!")
-        Button(
-            modifier = Modifier
-                .padding(vertical = 24.dp),
-            onClick = onContinueClicked
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
-            Text("Continue")
-        }
-    }
-
-}
-
-@Composable
-fun Conversation(messages: List<Message>) {
-    LazyColumn {
-        items(messages) { message ->
-            MessageCard(message)
-        }
-    }
-}
-
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun MessageCard(msg: Message) {
-    // Add padding around our message
-    Row(modifier = Modifier.padding(all = 8.dp)) {
-        Image(
-            painter = painterResource("compose-multiplatform.xml"),
-            contentDescription = "Contact profile picture",
-            modifier = Modifier
-                // Set image size to 40 dp
-                .size(40.dp)
-                // Clip image to be shaped as a circle
-                .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
-
-        // Add a horizontal space between the image and the column
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // We keep track if the message is expanded or not in this
-        // variable
-        var isExpanded by remember { mutableStateOf(false) }
-        // surfaceColor will be updated gradually from one color to the other
-        val surfaceColor by animateColorAsState(
-            if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-        )
-
-        Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
-            Text(
-                text = msg.author,
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleSmall,
+            Image(
+                painter = painterResource("compose-multiplatform.xml"),
+                contentDescription = "Player picture",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
             )
-            // Add a vertical space between the author and message texts
-            Spacer(modifier = Modifier.height(4.dp))
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                shadowElevation = 1.dp,
-                // surfaceColor color will be changing gradually from primary to surface
-                color = surfaceColor,
-                // animateContentSize will change the Surface size gradually
-                modifier = Modifier.animateContentSize().padding(1.dp)
-            ) {
-                Text(
-                    text = msg.body,
-                    modifier = Modifier.padding(all = 4.dp),
-                    // If the message is expanded, we display all its content
-                    // otherwise we only display the first line
-                    maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            Box(Modifier.fillMaxSize()) {
+                Text("Clickable", Modifier.align(Alignment.Center))
             }
         }
     }
+    Divider(Modifier.padding(50.dp, 10.dp))
 }
 
 expect fun getPlatformName(): String
