@@ -27,3 +27,11 @@ data class Game(
     var opponent_score: Int,
     var group_photo: String?,
 )
+
+data class User(
+    val id: Int,
+    val created_at: String,
+    var username: String,
+    var name: String,
+    var email: String
+)

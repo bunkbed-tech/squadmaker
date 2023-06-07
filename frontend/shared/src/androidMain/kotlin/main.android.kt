@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Delete
@@ -42,6 +44,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -49,11 +52,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -75,6 +82,8 @@ fun MainView() = App()
 actual fun App() {
     var selectedPage by remember { mutableStateOf("Roster") }
     var isLoggedIn by remember { mutableStateOf(false) }
+    var isRegistering by remember { mutableStateOf(false) }
+    var isLoggingIn by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val player by remember { mutableStateOf(Player(
@@ -109,7 +118,14 @@ actual fun App() {
                 drawerState = drawerState,
                 drawerContent = {
                     ModalDrawerSheet {
-                        Text("Drawer title", modifier = Modifier.padding(16.dp))
+                        Row() {
+                            Text("Drawer title", modifier = Modifier.padding(16.dp))
+                            Button(
+                                onClick = {isLoggedIn = false}
+                            ) {
+                                Text("Log Out")
+                            }
+                        }
                         Divider()
                         NavigationDrawerItem(
                             label = { Text(text = "Drawer Item") },
@@ -371,25 +387,143 @@ actual fun App() {
                 )
             }
         } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Image(
-                    painter = painterResource("compose-multiplatform.xml"),
-                    contentDescription = "Player picture",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                )
-                Button(
-                    onClick = {}
+            if (isRegistering) {
+                var username by rememberSaveable { mutableStateOf("") }
+                var name by rememberSaveable { mutableStateOf("") }
+                var email by rememberSaveable { mutableStateOf("") }
+                var password by rememberSaveable { mutableStateOf("") }
+                var passwordHidden by rememberSaveable { mutableStateOf(true) }
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text("Sign Up")
+                    TextField(
+                        onValueChange = { username = it },
+                        value = username,
+                        label = { Text("Username") },
+                        placeholder = { Text("e.g. joe_schmoe") },
+                    )
+                    TextField(
+                        onValueChange = { name = it },
+                        value = name,
+                        label = { Text("Full Name") },
+                        placeholder = { Text("e.g. Joe Schmoe") },
+                    )
+                    TextField(
+                        onValueChange = { email = it },
+                        value = email,
+                        label = { Text("Email") },
+                        placeholder = { Text("e.g. joe@schmoe.co") },
+                    )
+                    TextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        singleLine = true,
+                        label = { Text("Password") },
+                        visualTransformation =
+                            if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordHidden = !passwordHidden }) {
+                                val visibilityIcon =
+                                    if (passwordHidden) Icons.Filled.Person else Icons.Filled.Favorite
+                                // Please provide localized description for accessibility services
+                                val description = if (passwordHidden) "Show password" else "Hide password"
+                                Icon(imageVector = visibilityIcon, contentDescription = description)
+                            }
+                        }
+                    )
+                    Row() {
+                        Button(
+                            onClick = {isRegistering = false}
+                        ) {
+                            Text("Cancel")
+                        }
+                        Button(
+                            onClick = {
+                                isLoggedIn = true
+                                isRegistering = false
+                            }
+                        ) {
+                            Text("Sign Up")
+                        }
+                    }
                 }
-                Button(
-                    onClick = {isLoggedIn = true}
+            } else if (isLoggingIn) {
+                var username by rememberSaveable { mutableStateOf("") }
+                var password by rememberSaveable { mutableStateOf("") }
+                var passwordHidden by rememberSaveable { mutableStateOf(true) }
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text("Sign In")
+                    TextField(
+                        onValueChange = { username = it },
+                        value = username,
+                        label = { Text("Username") },
+                        placeholder = { Text("e.g. joe_schmoe") },
+                    )
+                    TextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        singleLine = true,
+                        label = { Text("Password") },
+                        visualTransformation =
+                        if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordHidden = !passwordHidden }) {
+                                val visibilityIcon =
+                                    if (passwordHidden) Icons.Filled.Person else Icons.Filled.Favorite
+                                // Please provide localized description for accessibility services
+                                val description = if (passwordHidden) "Show password" else "Hide password"
+                                Icon(imageVector = visibilityIcon, contentDescription = description)
+                            }
+                        }
+                    )
+                    Row() {
+                        Button(
+                            onClick = {isLoggingIn = false}
+                        ) {
+                            Text("Cancel")
+                        }
+                        Button(
+                            onClick = {
+                                isLoggedIn = true
+                                isLoggingIn = false
+                            }
+                        ) {
+                            Text("Log In")
+                        }
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource("compose-multiplatform.xml"),
+                        contentDescription = "Player picture",
+                        modifier = Modifier
+                            .size(240.dp)
+                            .clip(CircleShape)
+                    )
+                    Button(
+                        onClick = {isRegistering = true}
+                    ) {
+                        Text("Sign Up")
+                    }
+                    Button(
+                        onClick = {isLoggingIn = true}
+                    ) {
+                        Text("Sign In")
+                    }
                 }
             }
         }
