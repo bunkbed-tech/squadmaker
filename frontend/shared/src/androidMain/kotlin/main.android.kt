@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import components.Card
 
 actual fun getPlatformName(): String = "Android"
 
@@ -71,7 +72,7 @@ fun MainView() = App()
 @ExperimentalMaterial3Api
 @ExperimentalResourceApi
 @Composable
-fun App() {
+actual fun App() {
     var selectedPage by remember { mutableStateOf("Roster") }
     var isLoggedIn by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
