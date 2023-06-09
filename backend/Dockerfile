@@ -1,5 +1,4 @@
-FROM rust:latest as test
-WORKDIR /app
+FROM rust:latest
 COPY Cargo.toml Cargo.lock ./
 
 # Create fake main.rs file in src and build
@@ -8,5 +7,3 @@ RUN cargo build
 
 # Copy rest of code and set command
 COPY . .
-ENTRYPOINT [ "cargo" ]
-CMD [ "test" ]

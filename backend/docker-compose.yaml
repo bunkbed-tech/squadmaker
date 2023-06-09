@@ -3,21 +3,25 @@ services:
   db:
     image: postgres:latest
     container_name: postgres
-    environment:
-      POSTGRES_USER: tester
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: testing
+    env_file: .env
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./logs:/var/lib/postgresql/pg_log
     ports:
       - 5432:5432
-  tests:
-    build:
-      context: .
-      target: test
-    container_name: testing
-    working_dir: /app
+  backend_tests:
+    build: .
+    container_name: backend_tests
     env_file: .env
+    command: [ cargo, test ]
+    depends_on:
+      - db
+  backend:
+    build: .
+    container_name: backend
+    env_file: .env
+    command: [ cargo, run ]
+    ports:
+      - 8080:8080
     depends_on:
       - db
