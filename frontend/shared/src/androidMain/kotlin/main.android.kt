@@ -1,24 +1,11 @@
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,9 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import components.BottomBar
+import components.Drawer
+import components.TopBar
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import pages.GamesView
@@ -88,76 +75,22 @@ actual fun App() {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 drawerContent = {
-                    ModalDrawerSheet {
-                        Row {
-                            Text("Drawer title", modifier = Modifier.padding(16.dp))
-                            Button(
-                                onClick = {
-                                    isSignedIn = false
-                                    scope.launch{
-                                        drawerState.apply{
-                                            if (isClosed) open() else close()
-                                        }
-                                    }
+                    Drawer(
+                        isSignOutClicked = {
+                            isSignedIn = false
+                            scope.launch{
+                                drawerState.apply{
+                                    if (isClosed) open() else close()
                                 }
-                            ) {
-                                Text("Sign Out")
                             }
                         }
-                        Divider()
-                        NavigationDrawerItem(
-                            label = { Text(text = "Drawer Item") },
-                            selected = false,
-                            onClick = { /*TODO*/ }
-                        )
-                        // ...other drawer items
-                    }
+                    )
                 }
             ) {
                 // Screen content
                 Scaffold(
                     topBar = {
-                        TopAppBar(
-                            title = { Text(selectedPage) },
-                            actions = {
-                                if (selectedPage == "Play") {
-                                    Button(
-                                        onClick = {}
-                                    ) {
-                                        Text("Players")
-                                    }
-                                    Button(
-                                        onClick = {}
-                                    ) {
-                                        Text("Batting")
-                                    }
-                                    Button(
-                                        onClick = {}
-                                    ) {
-                                        Text("Fielding")
-                                    }
-                                } else {
-                                    IconButton(onClick = { }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Search,
-                                            contentDescription = "Search",
-                                        )
-                                    }
-                                    IconButton(onClick = { }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.AccountBox,
-                                            contentDescription = "Sort",
-                                        )
-                                    }
-                                    IconButton(onClick = { }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.List,
-                                            contentDescription = "Filter",
-                                        )
-                                    }
-                                }
-                            }
-                        )
+                        TopBar(view = selectedPage)
                     },
                     bottomBar = {
                         BottomBar(
@@ -179,15 +112,14 @@ actual fun App() {
                         ) {
                             Text("Inc")
                         }
-                    },
-                    content = { innerPadding ->
-                        when (selectedPage) {
-                            "Roster" -> RosterView(innerPadding = innerPadding, player = player)
-                            "Games" -> GamesView(innerPadding = innerPadding, game = game)
-                            "Play" -> PlayView(innerPadding = innerPadding, game = game)
-                        }
                     }
-                )
+                ) { innerPadding ->
+                    when (selectedPage) {
+                        "Roster" -> RosterView(innerPadding = innerPadding, player = player)
+                        "Games" -> GamesView(innerPadding = innerPadding, game = game)
+                        "Play" -> PlayView(innerPadding = innerPadding, game = game)
+                    }
+                }
             }
         } else {
             if (isRegistering) {
