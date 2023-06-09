@@ -10,6 +10,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":shared"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
             }
         }
     }
