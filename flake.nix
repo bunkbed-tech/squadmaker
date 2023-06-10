@@ -29,6 +29,7 @@
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
         packages = with pkgs; [
+          android-tools
           kotlin
           openjdk11
           nixpkgs-fmt
