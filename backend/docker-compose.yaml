@@ -4,6 +4,12 @@ services:
     image: postgres:latest
     container_name: postgres
     env_file: .env
+    healthcheck:
+      test: [ CMD, pg_isready, -U, $POSTGRES_USER, -d, $POSTGRES_DB ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./logs:/var/lib/postgresql/pg_log
@@ -20,8 +26,10 @@ services:
     build: .
     container_name: backend
     env_file: .env
+    entrypoint: ./entrypoint.sh
     command: [ cargo, run ]
     ports:
       - 8080:8080
     depends_on:
-      - db
+      db:
+        condition: service_healthy
