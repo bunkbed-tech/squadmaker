@@ -12,3 +12,11 @@ COPY Cargo.toml Cargo.lock ./
 RUN cargo build
 COPY . .
 
+
+FROM base AS builder
+RUN cargo build --release --offline
+
+
+FROM debian:bullseye-slim AS prod
+COPY --from=builder /code/target/release/squadmaker-backend /
+CMD [ "/squadmaker-backend" ]
