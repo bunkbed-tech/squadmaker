@@ -16,18 +16,22 @@ services:
     ports:
       - 5432:5432
   backend_tests:
-    build: .
+    build:
+      context: .
+      target: base
     container_name: backend_tests
     env_file: .env
-    command: [ cargo, test ]
+    command: [ cargo, test, --offline ]
     depends_on:
       - db
   backend:
-    build: .
+    build:
+      context: .
+      target: base
     container_name: backend
     env_file: .env
     entrypoint: ./entrypoint.sh
-    command: [ cargo, run ]
+    command: [ cargo, run, --offline ]
     ports:
       - 8080:8080
     depends_on:

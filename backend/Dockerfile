@@ -1,10 +1,14 @@
-FROM rust:latest
+FROM rust AS base
+
+RUN apt-get update --yes -qq && \
+    apt-get install -qq --no-install-recommends postgresql-client && \
+    cargo install sqlx-cli --no-default-features --features native-tls,postgres
+
+WORKDIR /code
+EXPOSE 8080
+
+RUN cargo init
 COPY Cargo.toml Cargo.lock ./
-
-# Create fake main.rs file in src and build
-RUN mkdir ./src && echo 'fn main() { println!("Dummy!"); }' > ./src/main.rs
 RUN cargo build
-RUN cargo install sqlx-cli --no-default-features --features native-tls,postgres
-
-# Copy rest of code and set command
 COPY . .
+
