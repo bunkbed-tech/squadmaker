@@ -2,7 +2,7 @@ use std::env::var;
 
 use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
-use sqlx::{postgres::PgPoolOptions};
+use sqlx::postgres::PgPoolOptions;
 
 use squadmaker_backend::{
     state::AppState,
