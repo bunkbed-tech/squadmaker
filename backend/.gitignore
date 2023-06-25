@@ -2,3 +2,4 @@
 *.pem
 /data/
 /logs/
+/.venv/
