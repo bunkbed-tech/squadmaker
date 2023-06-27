@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from collections import defaultdict
 from pprint import pprint
 from random import sample, choice
 from faker import Faker
@@ -133,10 +134,46 @@ def make_attendance(
             attendance.append((i+1, teammates.index(player)+1))
     return attendance
 
-user = make_users()
-players = make_players()
-leagues = make_leagues()
-games = make_games(leagues)
-teammates = make_teammates(leagues, players)
-scores = make_scores(leagues, games, teammates)
-attendance = make_attendance(games, teammates)
+def to_sql() -> str:
+    users = make_users()
+    players = make_players()
+    leagues = make_leagues()
+    games = make_games(leagues)
+    teammates = make_teammates(leagues, players)
+    scores = make_scores(leagues, games, teammates)
+    attendance = make_attendance(games, teammates)
+
+    sql = ""
+    sql += "INSERT INTO \"user\" (name, email, username, password_hash, avatar) VALUES\n"
+    sql += ",\n".join([str(user) for user in users]) + ";\n"
+    sql += "INSERT INTO player (name, gender, pronouns, birthday, phone, email, place_from, photo, score_all_time, score_avg_per_game, games_attended) VALUES\n"
+    sql += ",\n".join([str(player) for player in players]) + ";\n"
+    sql += "INSERT INTO league (name, team_name, sport, cost, captain_id, games_won, games_lost, games_played) VALUES\n"
+    sql += ",\n".join([str(league) for league in leagues]) + ";\n"
+    sql += "INSERT INTO game (opponent_name, game_location, start_datetime, league_id, your_score, opponent_score, group_photo) VALUES\n"
+    sql += ",\n".join([str(game) for game in games]) + ";\n"
+    sql += "INSERT INTO teammate (league_id, player_id, paid) VALUES\n"
+    sql += ",\n".join([str(teammate) for teammate in teammates]) + ";\n"
+    sql += "INSERT INTO score (player_id, game_id, score_type_id) VALUES\n"
+    sql += ",\n".join([str(score) for score in scores]) + ";\n"
+    sql += "INSERT INTO attendance (game_id, teammate_id) VALUES\n"
+    sql += ",\n".join([str(attend) for attend in attendance]) + ";\n"
+
+    counter = defaultdict(lambda: 0)
+    for score in scores:
+        counter[str(score[0])] += 1
+    cases = " ".join([f"WHEN player_id = {key} THEN {value}" for key, value in counter.items()])
+    sql += f"UPDATE player SET score_all_time = CASE {cases} ELSE score_all_time END;\n"
+
+    counter = defaultdict(lambda: 0)
+    for attend in attendance:
+        counter[str(teammates[attend[1]-1][1])] += 1
+    cases = " ".join([f"WHEN player_id = {key} THEN {value}" for key, value in counter.items()])
+    sql += f"UPDATE player SET games_attended = CASE {cases} ELSE games_attended END;\n"
+
+    sql += "UPDATE player SET score_avg_per_game = CAST(score_all_time AS REAL) / CAST(games_attended AS REAL);"
+
+    return sql
+
+with open("tests/data/dummy.sql", "w") as f:
+    f.write(to_sql())
