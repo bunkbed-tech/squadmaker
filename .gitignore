@@ -2,6 +2,7 @@
 .direnv/
 
 # Miscellaneous
-.DS_Store
+**/.DS_Store
+**/._*
 /build/
 *.sw*
